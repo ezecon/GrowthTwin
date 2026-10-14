@@ -1,0 +1,6 @@
+prev_family,next_family,severity,yield_penalty_pct,note_bn
+cereal,cereal,warn,6,পরপর ধান/গমজাতীয় ফসলে একই রোগ-পোকা ও পুষ্টির ঘাটতি বাড়ে
+solanaceae,solanaceae,block,25,আলু/টমেটো পরপর চাষে ঢলে পড়া ও নাবিধ্বসা রোগের ঝুঁকি খুব বেশি
+brassica,brassica,warn,10,সরিষাজাতীয় ফসল পরপর চাষে রোগ ও পোকার চাপ বাড়ে
+legume,legume,warn,8,ডালজাতীয় ফসল পরপর চাষে মাটিবাহিত রোগ বাড়তে পারে
+legume,cereal,ok,-5,ডালজাতীয় ফসলের পর মাটিতে নাইট্রোজেন বেশি থাকে যা পরবর্তী ধান/ভুট্টায় সুবিধা দেয়
