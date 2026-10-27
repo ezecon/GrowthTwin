@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GrowthTwin</title>
+<script>try{document.documentElement.dataset.theme=localStorage.getItem("gt_theme")==="light"?"light":"dark";document.documentElement.lang=localStorage.getItem("gt_lang")==="en"?"en":"bn"}catch(e){}</script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="gt-ui.css?v=20261024c">
+</head>
+<body>
+<div id="wipe"></div>
+<div id="ctl"><button id="lg" type="button" aria-label="Language / ভাষা">EN</button><button id="th" type="button" aria-label="Day / Night"></button></div>
+<div id="auth" class="hidden" role="dialog" aria-modal="true" aria-labelledby="authT"><div class="card">
+ <h3 id="authT" style="font-size:24px">Growth<span style="color:var(--lime)">Twin</span></h3>
+ <p class="muted" id="authSub" style="margin:0">চালিয়ে যেতে লগইন করুন।</p>
+ <div class="row tabs" id="tabs"><button class="chip" id="tL" aria-pressed="true" type="button">লগইন</button><button class="chip" id="tR" aria-pressed="false" type="button">নতুন একাউন্ট</button></div>
+ <div id="eA" class="err hidden" role="alert"></div><div id="mA" class="ok hidden" role="status"></div>
+ <form id="fL" novalidate><div class="fld"><label for="lE">ইমেইল</label><input id="lE" type="email" autocomplete="email" required></div>
+  <div class="fld"><label for="lP">পাসওয়ার্ড</label><input id="lP" type="password" autocomplete="current-password" required></div><button class="p" type="submit" style="width:100%">লগইন</button></form>
+ <form id="fR" class="hidden" novalidate><div class="fld"><label for="rN">নাম</label><input id="rN" autocomplete="name" required></div>
+  <div class="fld"><label for="rM">মোবাইল (ঐচ্ছিক)</label><input id="rM" inputmode="tel" placeholder="01712345678" autocomplete="tel"></div>
+  <div class="fld"><label for="rE">ইমেইল</label><input id="rE" type="email" autocomplete="email" required></div>
+  <div class="fld"><label for="rP">পাসওয়ার্ড (৮+ অক্ষর, অক্ষর ও সংখ্যা)</label><input id="rP" type="password" autocomplete="new-password" minlength="8" required></div>
+  <div class="fld"><label for="rR">আমি</label><select id="rR"><option value="farmer">কৃষক</option><option value="expert">কৃষি বিশেষজ্ঞ (অ্যাডমিন অনুমোদন লাগবে)</option></select></div>
+  <button class="p" type="submit" style="width:100%">একাউন্ট খুলুন</button></form>
+ <form id="fD" class="hidden" novalidate><p class="muted">ডেভ মোড: সার্ভারে লগইন বন্ধ (<code>AUTH_REQUIRED=false</code>)। নাম ও ভূমিকা বেছে নিন। প্রোডাকশনে এটি দেখাবে না।</p>
+  <div class="fld"><label for="dU">নাম / আইডি</label><input id="dU" value="farmer1" maxlength="30"></div>
+  <div class="fld"><label for="dR">ভূমিকা</label><select id="dR"><option value="farmer">কৃষক</option><option value="expert">বিশেষজ্ঞ</option><option value="admin">অ্যাডমিন</option></select></div>
+  <button class="p" type="submit" style="width:100%">ঢুকুন</button></form>
+</div></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-sprout" viewBox="0 0 24 24"><path d="M12 21v-9"/><path d="M12 12c0-4 3-7 8-7 0 5-3 8-8 7z"/><path d="M12 14c0-3-2-5-6-5 0 4 2 6 6 5z"/></symbol>
+<symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></symbol>
+<symbol id="i-cube" viewBox="0 0 24 24"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M12 12l9-5M12 12L3 7M12 12v10"/></symbol>
+<symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M9 11h6M9 14h4"/></symbol>
+<symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></symbol>
+<symbol id="i-out" viewBox="0 0 24 24"><path d="M9 4H5v16h4"/><path d="M16 8l4 4-4 4M20 12H9"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.5 3-6 6-6s6 2.5 6 6"/><path d="M16 5a3 3 0 0 1 0 6M18 14c2 .8 3 3 3 6"/></symbol>
+<symbol id="i-pulse" viewBox="0 0 24 24"><path d="M3 12h4l2-6 4 12 2-6h6"/></symbol>
+</defs></svg>
+<aside id="side" aria-label="মেনু"></aside>
+<script src="gt-bn.js?v=20261024c"></script>
+<script src="gt-shell.js?v=20261024c" data-app="spa"></script>
+<div id="fx"><i></i><i></i><i></i></div><div id="spot"></div><canvas id="pt"></canvas>
+
+<header class="hero view" id="top">
+ <div id="bgs"></div><div id="land"></div><div class="shade"></div><div id="slides"></div>
+ <div class="foot"><div><span class="mono">LOCATION</span><span id="loc" class="t"></span></div><div class="dots" id="dots"></div></div>
+</header>
+<section class="s view" id="sentinel-monitor">
+  <div class="sec-head rv"><span class="n"><svg class="ic"><use href="#i-shield"/></svg>SENTINEL</span><div><h2>Trust-aware sensor monitor</h2><p>Keep the original GrowthTwin interface. This panel adds the Sentinel demo without replacing your existing UI.</p></div></div>
+  <div class="gt-sentinel-wrap">
+    <div class="gt-sentinel-toolbar"><div><span class="gt-sentinel-kicker">DATA SOURCE</span><div class="gt-sentinel-modes" role="group" aria-label="Data source"><button type="button" class="gt-s-mode active" data-gt-source="sim">Simulation</button><button type="button" class="gt-s-mode" data-gt-source="real">Real sensor</button></div></div></div>
+    <div id="gtNotice" class="gt-sentinel-notice"><strong>Demo mode:</strong> the Fresh, Stale, and Suspect scenarios below are simulated examples. They do not indicate that a physical sensor is connected and do not control hardware.</div>
+    <div id="gtNoticeReal" class="gt-sentinel-notice hidden"><strong>Real sensor mode:</strong> values come from readings your ESP32 sent to the server. Nothing here is simulated, and nothing here controls a pump.</div>
+    <div class="gt-sentinel-toolbar"><div id="gtSimBar"><span class="gt-sentinel-kicker">READING SCENARIO</span><div class="gt-sentinel-modes"><button type="button" class="gt-s-mode active" data-gt-mode="fresh">Fresh reading</button><button type="button" class="gt-s-mode" data-gt-mode="stale">Stale reading</button><button type="button" class="gt-s-mode" data-gt-mode="suspect">Suspect outlier</button></div></div><div id="gtRealBar" class="hidden"><span class="gt-sentinel-kicker">PLOT</span><div class="gt-sentinel-modes"><select id="gtPlot" aria-label="Select plot" style="width:auto;min-width:220px"></select><button type="button" id="gtReload" class="gt-s-mode">Refresh</button></div></div><span id="gtScenarioBadge" class="gt-s-badge good">FRESH · SIMULATED</span></div>
+    <div class="gt-sentinel-grid">
+      <article class="gt-s-card gt-s-moisture"><span id="gtMoistureLabel" class="gt-s-label">SOIL MOISTURE · DEMO</span><div id="gtMoisture" class="gt-s-big">42.6<span>%</span></div><p id="gtMoistureNote">Illustrative reading only</p><div id="gtBars" class="gt-s-bars" aria-label="Illustrative recent readings"></div><div id="gtBarsCaption" class="gt-s-caption">Recent values are simulated, not from a connected probe.</div></article>
+      <article class="gt-s-card"><span class="gt-s-label">CONNECTION</span><div id="gtLinkStatus" class="gt-s-badge good">SIMULATED</div><p id="gtLinkDetail">No physical device connection is implied.</p><hr><span class="gt-s-label">FRESHNESS</span><div id="gtFreshStatus" class="gt-s-badge good">FRESH*</div><p id="gtFreshDetail">Illustrative sample age</p></article>
+      <article class="gt-s-card"><span class="gt-s-label">QUALITY GATE</span><div id="gtQualityStatus" class="gt-s-badge good">PASS*</div><p id="gtQualityDetail">Example status only</p><hr><span class="gt-s-label">TWIN ACTION</span><div id="gtTwinStatus" class="gt-s-badge neutral">PREVIEW ONLY</div><p id="gtTwinDetail">No real twin correction is triggered by this demo.</p></article>
+    </div>
+    <div class="gt-sentinel-grid gt-sentinel-bottom">
+      <article class="gt-s-card"><h3>Scenario explanation</h3><div id="gtScenarioText" class="gt-s-event good"><strong>Fresh simulated reading</strong><p>Use fresh, plausible readings as candidates for the trust pipeline. The backend must decide whether real telemetry is accepted.</p></div><h3 class="gt-s-subhead">Event trail</h3><div id="gtEvents" class="gt-s-events"><div class="gt-s-event"><strong>Demo initialized</strong><p>Illustrative event; no physical sensor connected.</p></div></div></article>
+      <article class="gt-s-card"><div class="gt-s-headline"><h3>Backend reachability</h3><button id="gtRefreshApi" type="button" class="p">Check API</button></div><div id="gtApiStatus" class="gt-s-badge neutral">NOT CHECKED</div><p id="gtApiDetail">Check /health on the running GrowthTwin server.</p><p class="gt-s-caption">This checks server reachability only—not sensor connectivity, Supabase persistence, or data trust.</p><hr><h3>Field-test checklist</h3><p class="gt-s-caption">Progress is saved in this browser.</p><div id="gtChecklist" class="gt-s-checklist"><label><input type="checkbox"> Physical probe readings change plausibly</label><label><input type="checkbox"> Authenticated API accepts a real reading</label><label><input type="checkbox"> Reading is saved and retrievable in Supabase</label><label><input type="checkbox"> Dashboard displays the real reading and timestamp</label><label><input type="checkbox"> Stale/outlier readings are withheld from twin updates</label><label><input type="checkbox"> Offline retry does not create duplicate readings</label></div><div id="gtCheckCount" class="gt-s-caption">0 / 6 complete</div></article>
+    </div>
+  </div>
+</section>
+
+
+<!-- SECTION 1 -->
+<section class="s view" id="s1">
+ <div class="sec-head rv"><span class="n"><svg class="ic"><use href="#i-bulb"/></svg>SECTION 1</span><div><h2>চাষের পরামর্শ</h2><p class="lead">জমি আর ফসলের কথা লিখুন। ঝুঁকি, তিনটি অবস্থার লাভ-লোকসান আর বর্তমান বনাম নতুন ফসলের তুলনা পাবেন।</p></div></div>
+ <div id="e1" class="err hidden" role="alert"></div>
+ <div class="card rv">
+  <label for="prompt">আপনার কথা লিখুন</label>
+  <textarea id="prompt" rows="3" placeholder="আমার ৩০ শতাংশ জমি আছে, গত ৪ বছর ধান চাষ করেছি, এখন ভুট্টা চাষ করতে চাই।"></textarea>
+  <div class="row" style="margin-top:12px"><button class="p" id="go"><svg class="ic"><use href="#i-sun"/></svg>বিশ্লেষণ করুন</button><button id="ex">উদাহরণ বসান</button></div>
+ </div>
+ <div id="q" class="card hidden" aria-live="polite"></div>
+ <div id="rep" class="hidden" aria-live="polite"></div>
+</section>
+
+<!-- SECTION 2 -->
+<section class="s view" id="s2">
+ <div class="sec-head rv"><span class="n"><svg class="ic"><use href="#i-cube"/></svg>SECTION 2</span><div><h2>প্লট টুইন</h2><p class="lead">একটি প্লটের বীজ থেকে কর্তন পর্যন্ত জীবনচক্র। সময় এগোয় আপনি "এগিয়ে যান" চাপলে। এখন সেন্সর সিমুলেটেড।</p></div></div>
+ <div id="e2" class="err hidden" role="alert"></div>
+ <div id="hv" class="card hidden"></div>
+ <div class="card rv"><div class="row" id="chips"></div></div>
+ <div class="card hidden" id="create">
+  <h3>নতুন প্লট</h3>
+  <div class="grid">
+   <div><label for="cCrop">ফসল</label><select id="cCrop"></select></div>
+   <div><label for="cArea">জমি (শতাংশ)</label><input id="cArea" type="number" min="1" max="5000" value="30"></div>
+   <div><label for="cSoil">মাটি</label><select id="cSoil"></select></div>
+   <div><label for="cPh">pH</label><input id="cPh" type="number" step="0.1" min="3.5" max="9.5" value="6.3"></div>
+   <div><label for="cEc">লবণাক্ততা (dS/m)</label><input id="cEc" type="number" step="0.1" min="0" max="20" value="1"></div>
+   <div><label for="cDate">বপনের তারিখ</label><input id="cDate" type="date"></div>
+   <div><label for="cName">নাম</label><input id="cName" placeholder="পূর্বের জমি"></div>
+  </div>
+  <div class="row" style="margin-top:12px"><button class="p" id="mk"><svg class="ic"><use href="#i-sprout"/></svg>প্লট তৈরি করুন</button></div>
+ </div>
+ <div id="dash" class="hidden"></div>
+</section>
+
+<!-- SECTION 2b: IRRIGATION -->
+<section class="s view" id="irrigation">
+ <div class="sec-head rv"><span class="n"><svg class="ic"><use href="#i-pulse"/></svg>SECTION 2 · সেচ</span><div><h2>সেচ কন্ট্রোল</h2><p class="lead">যেকোনো জায়গা থেকে এক ক্লিকে সেচ, আর ভুলে গেলে সময়মতো অটো সেচ। এখন আর্দ্রতা সিমুলেটেড; ESP32 জুড়লে আসল মান বসবে।</p></div></div>
+ <div id="eIrr" class="err hidden" role="alert"></div>
+ <div class="card rv" id="i-top"><div class="row"><select id="i-plots" aria-label="প্লট বাছুন" style="width:auto;max-width:280px"></select><span class="i-b" id="i-live">সংযোগ হচ্ছে…</span><span style="flex:1"></span><a href="#s2"><button type="button">← প্লট টুইন</button></a></div></div>
+ <div id="i-empty" class="card hidden i-empty"><h3>আগে একটি প্লট তৈরি করুন</h3><p class="muted">সেচ কন্ট্রোল প্লটের ফসল ও মাটির তথ্য দিয়ে কাজ করে।</p><a href="#s2"><button type="button" class="p">প্লট তৈরি করুন</button></a></div>
+ <div class="ig" id="i-grid">
+  <article class="card rv i-g"><div class="i-ct"><h3>মাটির আর্দ্রতা</h3><span class="i-b" id="i-srcb">—</span></div>
+   <div class="i-gw"><svg viewBox="0 0 320 320" role="img" aria-label="মাটির আর্দ্রতার গেজ"><defs><clipPath id="icp"><circle cx="160" cy="160" r="108"/></clipPath><linearGradient id="ilq" x1="0" y1="0" x2="0" y2="1"><stop id="il1" offset="0" stop-color="#3de0a0"/><stop id="il2" offset="1" stop-color="#0d5b4b"/></linearGradient></defs>
+    <circle cx="160" cy="160" r="116" fill="rgba(5,14,9,.6)" stroke="rgba(255,255,255,.1)" stroke-width="2"/>
+    <g clip-path="url(#icp)"><g id="i-liq" style="transform:translateY(268px);transition:transform 1.3s cubic-bezier(.3,.8,.3,1)"><path id="i-w" class="i-wave" fill="url(#ilq)"/><rect y="12" width="640" height="400" fill="url(#ilq)"/></g></g>
+    <g id="i-zones" fill="none" stroke-width="12"></g><path id="i-prog" fill="none" stroke="#a3f20a" stroke-width="12" stroke-linecap="round"/></svg>
+    <div class="i-gc"><div class="i-gn" id="i-gn">—<small>%</small></div><div class="i-lab" style="margin:4px 0 0">আর্দ্রতা</div></div></div>
+   <div class="i-st" id="i-stt" aria-live="polite">লোড হচ্ছে…</div><div class="i-leg muted" id="i-leg"></div><p class="muted" id="i-trust" style="text-align:center;margin:10px 0 0"></p>
+   <div class="i-demo hidden" id="i-demo"><b>ডেমো কন্ট্রোল (সিমুলেশন)</b><button type="button" id="i-dry">🏜 শুকনো করুন</button><button type="button" id="i-wet">💧 ভেজা করুন</button></div></article>
+  <article class="card rv i-p"><div class="i-ct"><h3>পাম্প</h3><span class="i-b" id="i-pc">বন্ধ</span></div>
+   <div class="i-pipe" id="i-pipe"><svg viewBox="0 0 420 124" role="img" aria-label="পাম্প থেকে জমিতে পানির প্রবাহ"><rect x="8" y="16" width="74" height="86" rx="14" fill="rgba(61,224,160,.08)" stroke="rgba(61,224,160,.5)" stroke-width="2"/><rect x="14" y="48" width="62" height="48" rx="9" fill="rgba(61,224,160,.4)"/><text x="45" y="38" text-anchor="middle" font-size="12" fill="currentColor" opacity=".7">ট্যাংক</text>
+    <path d="M82 76H126" stroke="rgba(255,255,255,.16)" stroke-width="9" stroke-linecap="round" fill="none"/><circle cx="150" cy="62" r="28" fill="rgba(255,255,255,.05)" stroke="rgba(163,242,10,.55)" stroke-width="2"/><g class="i-imp"><path d="M150 62V40M150 62l19 11M150 62l-19 11" stroke="#a3f20a" stroke-width="5" stroke-linecap="round"/></g><circle cx="150" cy="62" r="6" fill="#a3f20a"/>
+    <path d="M178 62H282Q312 62 312 40V34H346" stroke="rgba(255,255,255,.16)" stroke-width="9" stroke-linecap="round" fill="none"/><path class="i-flow" d="M178 62H282Q312 62 312 40V34H346" stroke="#3de0a0" stroke-width="4" stroke-linecap="round" fill="none"/>
+    <rect x="292" y="104" width="124" height="14" rx="7" fill="#6b4a2a"/><path d="M310 104q4-16 0-22M338 104q-5-18 0-26M366 104q4-14 0-20M394 104q-4-16 0-22" stroke="#3de0a0" stroke-width="4" stroke-linecap="round" fill="none"/></svg></div>
+   <div class="i-ctl"><div class="i-gow"><svg viewBox="0 0 190 190" aria-hidden="true"><circle class="i-ring-bg" cx="95" cy="95" r="88"/><circle class="i-ring" id="i-ring" cx="95" cy="95" r="88" stroke-dasharray="552.9" stroke-dashoffset="552.9"/></svg>
+    <button type="button" class="i-go" id="i-go" aria-label="পানি দিন"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="i-goic"></svg><span id="i-gt">পানি দিন</span><span class="mono" id="i-gtm" style="font-size:15px"></span></button></div>
+    <p class="i-lab" style="margin:8px 0 0">কত মিনিট</p><div class="i-chips c" id="i-mins" role="group" aria-label="সেচের সময়"></div><div class="i-hint muted" id="i-hint" aria-live="polite"></div></div></article>
+  <article class="card rv i-c"><div class="i-ct"><h3>লাইভ আর্দ্রতা</h3><span class="i-b">সর্বশেষ কয়েক মিনিট</span></div><canvas id="i-ch" aria-label="আর্দ্রতার লাইভ চার্ট"></canvas>
+   <div class="i-leg2 muted"><span style="--c:#a3f20a">আর্দ্রতা</span><span style="--c:#3de0a0">পাম্প চালু ছিল</span><span style="--c:#f0c46a">সেচের সীমা</span></div></article>
+  <article class="card rv i-s"><div class="i-ct"><h3>ভুলে গেলে অটো সেচ</h3><span class="i-b" id="i-sch">বন্ধ</span></div>
+   <div class="i-sw"><div style="flex:1"><b>সময়মতো নিজে সেচ দেবে</b><p class="muted">শেষ সেচের পর নির্ধারিত সময় গেলে পাম্প নিজে চালু হবে। হাতে সেচ দিলে টাইমার আবার শুরু।</p></div><button type="button" id="i-son" role="switch" aria-checked="false" aria-label="অটো সেচ চালু বা বন্ধ"></button></div>
+   <p class="i-lab">কত সময় পর পর</p><div class="i-chips" id="i-ev" role="group"></div><p class="i-lab">প্রতিবার কত মিনিট</p><div class="i-chips" id="i-du" role="group"></div>
+   <label class="i-chk"><input type="checkbox" id="i-dryonly" checked><span>শুধু মাটি শুকনো থাকলে সেচ দিন (পানি বাঁচবে)</span></label>
+   <div class="i-due"><div><span class="muted">পরের অটো সেচ</span><br><b id="i-due">—</b></div></div><p class="muted" id="i-skip" style="margin:12px 0 0"></p></article>
+  <article class="card rv i-h"><div class="i-ct"><h3>সেচের ইতিহাস</h3><span class="i-b" id="i-hc">০টি</span></div><ul class="i-hist" id="i-hist"></ul></article>
+  <article class="card rv i-f"><div class="i-ct"><h3>নিরাপত্তা সীমা</h3><span class="i-b">SAFETY</span></div><p class="i-lab" style="margin-top:0">গত ২৪ ঘণ্টায় পাম্প চলেছে</p><div class="i-bar" id="i-ub"><i></i></div><p class="muted" id="i-ut" style="margin:8px 0 0"></p>
+   <ul class="i-rules"><li>প্রতিবার সর্বোচ্চ <b id="i-rmax">৩০</b> মিনিট, তারপর পাম্প নিজে বন্ধ</li><li>মাটি লক্ষ্যমাত্রায় পৌঁছালে পাম্প নিজে থামে</li><li>জমি অতিরিক্ত ভেজা থাকলে সেচ দেওয়া হয় না</li><li>দুইবারের মাঝে কয়েক সেকেন্ড বিরতি (পাম্প সুরক্ষা)</li></ul></article>
+ </div>
+ <div id="i-toast" role="status" aria-live="polite"></div>
+</section>
+
+<!-- SECTION 3 -->
+<section class="s view" id="s3">
+ <div class="sec-head rv"><span class="n"><svg class="ic"><use href="#i-chat"/></svg>SECTION 3</span><div><h2>WhatsApp ও SMS-এ পরামর্শ</h2><p class="lead">ইন্টারনেট ধীর বা অ্যাপ নেই? ফোনের মেসেজ থেকেই পরামর্শ ও সতর্কতা পাওয়ার নিয়ম।</p></div></div>
+ <div class="docs">
+  <div class="toc"><a href="#d1">অবস্থা</a><a href="#d2">কীভাবে চালু করবেন</a><a href="#d3">মেসেজ কমান্ড</a><a href="#d4">উদাহরণ কথোপকথন</a><a href="#d5">সার্ভার সেটআপ</a><a href="#d6">সীমাবদ্ধতা</a></div>
+  <div>
+   <div class="card rv" id="d1"><h3>এখন কোনটি তৈরি, কোনটি বাকি</h3>
+    <div class="status"><span class="badge b-go">তৈরি</span> জরুরি সতর্কতা SMS: প্লটে <code>sms_enabled</code> ও ফোন নম্বর দিলে <code>critical</code> / <code>action</code> সতর্কতা SMS হয়ে যায়।</div>
+    <div class="status"><span class="badge b-caution">সিমুলেটেড</span> <code>SMS_PROVIDER=none</code> থাকলে মেসেজ আসলে যায় না, শুধু <code>sms</code> ইভেন্ট হিসেবে লগ হয়।</div>
+    <div class="status"><span class="badge b-no">বাকি</span> ফোন থেকে মেসেজ পাঠিয়ে পরামর্শ চাওয়া (ইনবাউন্ড SMS / WhatsApp)। এর জন্য ব্যাকএন্ডে এখনো কোনো এন্ডপয়েন্ট নেই। নিচের কমান্ডগুলো প্রস্তাবিত নকশা।</div></div>
+   <div class="card rv" id="d2"><h3>কীভাবে চালু করবেন</h3>
+    <ol><li>সেকশন ২-এ প্লট তৈরি করুন।</li><li>প্লটের সেটিংসে ফোন নম্বর দিন (<code>01XXXXXXXXX</code> ফরম্যাট) এবং SMS চালু করুন।</li><li>সার্ভারে SMS গেটওয়ে যুক্ত করুন (নিচে "সার্ভার সেটআপ")।</li><li>এরপর জরুরি সতর্কতা নিজে থেকে মেসেজে আসবে।</li></ol></div>
+   <div class="card rv" id="d3"><h3>মেসেজ কমান্ড (প্রস্তাবিত)</h3>
+    <div class="scroll"><table><thead><tr><th>পাঠান</th><th>কী হবে</th><th>ব্যবহৃত এন্ডপয়েন্ট</th></tr></thead><tbody>
+     <tr><td><code>ADVICE আপনার কথা</code></td><td>চাষের পরামর্শ, প্রশ্ন থাকলে উত্তর চাইবে</td><td><code>POST /advisor/analyze</code></td></tr>
+     <tr><td><code>1 2 3</code></td><td>প্রশ্নের উত্তর (বিকল্প নম্বর)</td><td><code>POST /advisor/analyze</code> (answers)</td></tr>
+     <tr><td><code>PLOT</code></td><td>আপনার প্লটের তালিকা</td><td><code>GET /twin/plots</code></td></tr>
+     <tr><td><code>STATUS 1</code></td><td>প্লট ১-এর অবস্থা ও সতর্কতা</td><td><code>GET /twin/plots/{id}</code></td></tr>
+     <tr><td><code>PUMP 1 ON</code> / <code>OFF</code></td><td>পাম্প চালু বা বন্ধ</td><td><code>POST /twin/plots/{id}/action</code></td></tr>
+     <tr><td><code>WHY 1</code></td><td>সর্বশেষ সতর্কতার কারণ</td><td><code>GET /twin/plots/{id}/why/{key}</code></td></tr></tbody></table></div></div>
+   <div class="card rv" id="d4"><h3>উদাহরণ কথোপকথন</h3>
+    <div class="sms out">ADVICE ৩০ শতাংশ জমি, ৪ বছর ধান, এবার ভুট্টা</div>
+    <div class="sms in">সেচের অবস্থা কেমন? ১ ভালো ২ আংশিক ৩ নেই</div>
+    <div class="sms out">2</div>
+    <div class="sms in">ভুট্টা: সতর্কতাসহ এগিয়ে যান। গড় লাভ আনুমানিক ... টাকা, খারাপ অবস্থায় ... টাকা। বিস্তারিত অ্যাপে।</div>
+    <p class="muted">উপরের টাকার অঙ্ক উদাহরণ নয়, বাস্তব উত্তরে ব্যাকএন্ডের হিসাব বসবে।</p></div>
+   <div class="card rv" id="d5"><h3>সার্ভার সেটআপ</h3>
+    <p>ব্যাকএন্ড কোনো নির্দিষ্ট গেটওয়ে ধরে নেয় না। <code>.env</code>-এ webhook দিলে প্রতিটি মেসেজ এই JSON হিসেবে POST হয়:</p>
+<pre>SMS_PROVIDER=webhook
+SMS_WEBHOOK_URL=https://your-adapter.example.com/send
+
+# POST body (text: up to 300 characters)
+{"to": "01712345678", "text": "Urgent: ..."}</pre>
+    <p>আপনার ছোট অ্যাডাপ্টার এই JSON নিয়ে বাংলাদেশি SMS গেটওয়ে বা WhatsApp Business API-তে পাঠাবে। ইনবাউন্ড কমান্ডের জন্য উল্টো দিকে একটি webhook এন্ডপয়েন্ট লাগবে, যা ফোন নম্বর থেকে ব্যবহারকারী চিনে উপরের এন্ডপয়েন্টগুলো ডাকবে।</p></div>
+   <div class="card rv" id="d6"><h3>সীমাবদ্ধতা</h3>
+    <ul><li>বাংলা SMS ইউনিকোড হয়, তাই এক মেসেজে প্রায় ৭০ অক্ষর। ৩০০ অক্ষরের উত্তর কয়েকটি মেসেজে ভাগ হবে।</li><li>সার্ভার "ফার্মার অফলাইন" নিজে বুঝতে পারে না। এখন জরুরি সতর্কতা সব সময় SMS-ও পাঠায়।</li><li>বীজ, সার ও কীটনাশকের মাত্রা স্থানীয় কৃষি অফিসে যাচাই করুন।</li></ul></div>
+  </div>
+ </div>
+</section>
+<!-- SECTION 4 -->
+<section class="s view" id="s4">
+ <div class="sec-head rv"><span class="n"><svg class="ic"><use href="#i-users"/></svg>SECTION 4</span><div><h2>কৃষকের ভরসা</h2><p class="lead">আপনি যে ফসল ফলাচ্ছেন, একই ফসল অন্যরা ফলালে শেষে কী লাভ-লোকসান হয়েছে, নাম ছাড়া হিসাব দেখুন। এতে অ্যাপের পরামর্শ বাস্তব ফলাফলের সাথে মিলিয়ে দেখতে পারবেন।</p></div></div>
+ <div id="e4" class="err hidden" role="alert"></div>
+ <div class="card rv"><label>ফসল বাছুন</label><div class="row" id="tc"></div></div>
+ <div id="tr"></div>
+</section>
+<!-- EXPERT / ADMIN -->
+<section class="s view" id="x">
+ <div class="sec-head rv"><span class="n"><svg class="ic"><use href="#i-shield"/></svg>EXPERT</span><div><h2>বিশেষজ্ঞ ও অ্যাডমিন</h2><p class="lead">কৃষকের পাঠানো ঝুঁকিপূর্ণ পরামর্শ ও অনিশ্চিত পাতার ছবি যাচাই করুন।</p></div></div>
+ <div id="eX" class="err hidden" role="alert"></div>
+ <div class="card" id="xq"></div><div class="card" id="xp"></div><div class="card hidden" id="xu"></div>
+</section>
+<footer>GrowthTwin · এটি পরামর্শ মাত্র, চূড়ান্ত সিদ্ধান্ত আপনার।</footer>
+
+<script>
+let LANG='bn';try{LANG=localStorage.getItem('gt_lang')==='en'?'en':'bn'}catch(_){}
+const $=s=>document.querySelector(s),reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const bn={format:n=>new Intl.NumberFormat(LANG==='en'?'en-US':'bn-BD').format(n)},money=n=>(n<0?'−':'')+bn.format(Math.abs(Math.round(n)))+' টাকা';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const signed=n=>`<span class="${n<0?'neg':'pos'}">${money(n)}</span>`;
+function md(t){let h='',l=false;for(const r of esc(t).split('\n')){const x=r.replace(/^#{1,4}\s+/,'').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');if(/^[-*]\s+/.test(r)){if(!l){h+='<ul>';l=true}h+='<li>'+x.replace(/^[-*]\s+/,'')+'</li>'}else{if(l){h+='</ul>';l=false}if(x.trim())h+='<p>'+x+'</p>'}}return h+(l?'</ul>':'')}
+const store={get:k=>{try{return localStorage.getItem(k)}catch(_){return null}},set:(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(_){}}};
+let ME=null,CFG={auth_required:false};
+const ROLE_BN={farmer:'কৃষক',expert:'বিশেষজ্ঞ',admin:'অ্যাডমিন'};
+function authHeaders(){const h={},t=store.get('gt_token');if(t)h.Authorization='Bearer '+t;if(!CFG.auth_required){h['X-Dev-User']=store.get('gt_dev_user')||'anon';h['X-Dev-Role']=store.get('gt_dev_role')||'farmer'}return h}
+function saveSession(s){store.set('gt_token',s.access_token);store.set('gt_refresh',s.refresh_token);store.set('gt_user',JSON.stringify(s.user||{}));ME=s.user}
+let refreshing=null;
+function refresh(){const rt=store.get('gt_refresh');if(!rt)return Promise.resolve(false);
+ return refreshing=refreshing||fetch('/auth/refresh',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({refresh_token:rt})}).then(async r=>{if(!r.ok)return false;saveSession(await r.json());return true}).catch(()=>false).finally(()=>{refreshing=null})}
+async function api(path,o={},retry=true){
+ let r;try{r=await fetch(path,{...o,headers:{'Content-Type':'application/json',...authHeaders()}})}catch(_){throw new Error(LB('সার্ভারের সাথে যোগাযোগ করা যাচ্ছে না। ইন্টারনেট বা সার্ভার চালু আছে কি না দেখুন।','Cannot reach the server. Check your internet connection or whether the server is running.'))}
+ if(r.status===401&&CFG.auth_required){if(retry&&await refresh())return api(path,o,false);logout(true);throw new Error(LB('সেশন শেষ, আবার লগইন করুন।','Session ended, please log in again.'))}
+ if(!r.ok){let d='';try{d=(await r.json()).detail}catch(_){}
+  throw new Error(r.status===403?'এই কাজের অনুমতি নেই।':r.status===404?(typeof d==='string'&&d?d:'পাওয়া যায়নি, নতুন করে শুরু করুন।'):r.status===429?(d||'অনেকবার চেষ্টা হয়েছে, একটু পরে আবার করুন।'):'সমস্যা হয়েছে'+(typeof d==='string'&&d?' ('+d+')':'')+'। আবার চেষ্টা করুন।')}
+ return r.json()}
+const post=(p,b)=>api(p,{method:'POST',body:JSON.stringify(b||{})});
+const err=(id,m)=>{const e=$(id);e.textContent=m||'';e.classList.toggle('hidden',!m)};
+let busy=false;const lock=b=>{busy=b;document.querySelectorAll('button').forEach(x=>x.disabled=b)};
+async function guard(e,fn){if(busy)return;err(e,'');lock(true);try{await fn()}catch(x){err(e,x.message)}finally{lock(false)}}
+
+/* HERO */
+const S=[
+ {tag:'বাংলাদেশের জন্য কৃষি টুইন',h:'প্রতিটি জমির জন্য <g>কৃষি বুদ্ধিমত্তা</g> ও নির্ভুল AI',p:'জমির ডিজিটাল প্রতিলিপি দিয়ে চাষের ঝুঁকি, রোগ ও সেচের পরামর্শ, বাংলায়।',loc:'তিস্তা অববাহিকা, রংপুর — পানি ব্যবস্থাপনা',crop:'বোরো ধান (ব্রি ধান২৯)',m:68,adv:'সেচের সেরা সময় সকাল ৬টা',risk:'কম আকস্মিক বন্যার ঝুঁকি',g:'linear-gradient(180deg,#0c1d12,#1a3a14 60%,#2a4a12)'},
+ {tag:'চাষের আগে ঝুঁকি',h:'রোপণের আগেই জানুন <g>ঝুঁকি</g> কতটা',p:'তিন অবস্থার লাভ-লোকসান আর বর্তমান ফসলের সাথে তুলনা।',loc:'সিলেট হাওর — আকস্মিক বন্যা নজরদারি',crop:'বোরো ধান (ব্রি ধান২৮)',m:84,adv:'বীজতলা ৫ দিন পিছিয়ে দিন',risk:'মাঝারি বন্যার ঝুঁকি',g:'linear-gradient(180deg,#0a1a1d,#123a3a 60%,#1c4a2c)'},
+ {tag:'প্রতিদিনের টুইন',h:'আপনার প্লট প্রতিদিন <g>আপনাকে</g> জানাবে',p:'পানি, সার, আলো ও রোগের হিসাব। জরুরি হলে মেসেজে।',loc:'যশোর — সবজি বেল্ট',crop:'টমেটো',m:41,adv:'পাতা পচা রোগের ঝুঁকি বেশি, স্প্রে করুন',risk:'উচ্চ রোগের ঝুঁকি',g:'linear-gradient(180deg,#171a0b,#3a3a10 60%,#4a4a14)'}];
+const SEN=[{tag:'Farm twin for Bangladesh',h:'An <g>agri intelligence</g> and precise AI for every field',p:'A digital copy of your field gives crop-risk, disease and irrigation advice, in Bangla.',loc:'Teesta basin, Rangpur — water management',crop:'Boro rice (BRRI dhan29)',adv:'Best irrigation time is 6 am',risk:'Low flash-flood risk'},{tag:'Risk before sowing',h:'Know the <g>risk</g> before you plant',p:'Profit and loss in three scenarios, compared with your current crop.',loc:'Sylhet haor — flash-flood watch',crop:'Boro rice (BRRI dhan28)',adv:'Delay the seedbed by 5 days',risk:'Medium flood risk'},{tag:'Daily twin',h:'Your plot will <g>tell you</g> every day',p:'Water, fertiliser, light and disease estimates. Messages when it is urgent.',loc:'Jashore — vegetable belt',crop:'Tomato',adv:'High leaf-blight risk, spray now',risk:'High disease risk'}];S.forEach((s,i)=>s.en=SEN[i]);
+const words=(h)=>{let i=0;return h.split(/(<g>.*?<\/g>)/).map(seg=>{const g=seg.startsWith('<g>');return seg.replace(/<\/?g>/g,'').split(' ').filter(Boolean).map(w=>`<span class="w ${g?'g':''}"><span style="--i:${i++}">${w}</span></span>`).join(' ')}).join(' ')};
+const slideInner=s0=>{const s=LANG==='en'&&s0.en?{...s0,...s0.en}:s0;return `<div class="wrap"><div class="copy"><span class="tag">${s.tag}</span><h1>${words(s.h)}</h1><p>${s.p}</p><div class="btns"><a href="#s1" title="চাষের পরামর্শ" aria-label="চাষের পরামর্শ"><button class="p"><svg class="ic"><use href="#i-bulb"/></svg>পরামর্শ নিন</button></a><a href="#s2" title="প্লট টুইন" aria-label="প্লট টুইন"><button><svg class="ic"><use href="#i-cube"/></svg>প্লট টুইন দেখুন</button></a></div></div>
+ <div class="stage"><div class="hcard"><b><svg class="ic" style="color:var(--lime)"><use href="#i-pulse"/></svg>লাইভ টুইন</b><div class="row2"><span>ফসল</span><b>${s.crop}</b></div><div class="row2"><span>মাটির আর্দ্রতা</span><b class="mono" style="color:var(--lime)">${s.m}%</b></div><div class="meter"><b style="width:${s.m}%"></b></div><p style="margin-top:18px;padding:12px;border:1px solid var(--line);border-radius:12px;font-size:14px">${s.adv}</p></div>
+ <div class="float f1"><svg class="ic" style="color:var(--lime)"><use href="#i-sprout"/></svg><em>আনুমানিক বাজার</em><b>৳৩২.৫০ / কেজি</b></div><div class="float f2"><svg class="ic" style="color:var(--mint)"><use href="#i-drop"/></svg><em>প্রাক-রোপণ ঝুঁকি</em><b>${s.risk}</b></div></div></div>`};
+const locOf=s=>LANG==='en'&&s.en?s.en.loc:s.loc;
+S.forEach((s,i)=>{
+ $('#bgs').insertAdjacentHTML('beforeend',`<div class="bg" style="background:url(img/field-${i+1}.jpg) center/cover,${s.g}"></div>`);
+ $('#slides').insertAdjacentHTML('beforeend',`<div class="slide">${slideInner(s)}</div>`);
+ const b=document.createElement('button');b.setAttribute('aria-label','স্লাইড '+(i+1));b.onclick=()=>go(i);$('#dots').append(b)});
+const bgs=[...document.querySelectorAll('.bg')],sl=[...document.querySelectorAll('.slide')],dt=[...document.querySelectorAll('.dots button')];let cur=-1,tm;
+function go(i){i=(i+S.length)%S.length;if(i===cur)return;[bgs,sl,dt].forEach(a=>a.forEach(e=>e.classList.remove('on')));void document.body.offsetWidth;[bgs,sl,dt].forEach(a=>a[i].classList.add('on'));$('#loc').textContent=locOf(S[i]);cur=i;clearTimeout(tm);if(!reduce)tm=setTimeout(()=>go(cur+1),6000)}
+go(0);
+const hero=$('#top');
+if(!reduce)hero.addEventListener('mousemove',e=>{const x=e.clientX/innerWidth-.5,y=e.clientY/innerHeight-.5;document.querySelectorAll('.slide.on .stage').forEach(s=>s.style.transform=`rotateY(${x*-16}deg) rotateX(${y*12}deg)`)});
+
+/* SECTION 1 */
+let sid=null,pending={},lastRep=null;
+$('#ex').onclick=()=>$('#prompt').value='আমার ৩০ শতাংশ জমি আছে, গত ৪ বছর ধান চাষ করেছি, এখন ভুট্টা চাষ করতে চাই।';
+async function analyze(body){await guard('#e1',async()=>{
+ const r=await post('/advisor/analyze',{session_id:sid,...body});sid=r.session_id;
+ if(r.status==='need_info')renderQ(r);else{$('#q').classList.add('hidden');renderRep(r.report)}})}
+$('#go').onclick=()=>{const p=$('#prompt').value.trim();if(p.length<5)return err('#e1','আপনার জমি ও ফসলের কথা একটু লিখুন।');sid=null;analyze({prompt:p})};
+function renderQ(r){pending={};const b=$('#q');
+ b.innerHTML=`<h3>আরও কিছু তথ্য দরকার</h3><p class="muted">জানা না থাকলে "জানি না" বেছে নিন, তখন অনুমান ধরা হবে এবং নির্ভরযোগ্যতা কমবে।</p>`+r.questions.map((q,qi)=>`<div style="margin:14px 0"><strong>${esc(q.text_bn)}</strong><div class="row" style="margin-top:8px">${q.options.map((o,oi)=>`<button class="chip" aria-pressed="false" data-q="${qi}" data-o="${oi}">${esc(o.label_bn)}</button>`).join('')}</div></div>`).join('')+`<button class="p" id="send">উত্তর পাঠান</button> <span class="muted">ধাপ ${bn.format(r.round)}</span>`;
+ b.classList.remove('hidden');b.classList.remove('pop');void b.offsetWidth;b.classList.add('pop');
+ b.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{const q=r.questions[+c.dataset.q];pending[q.slot]=q.options[+c.dataset.o].value;c.parentElement.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x===c))});
+ $('#send').onclick=()=>analyze({answers:pending});b.scrollIntoView({behavior:reduce?'auto':'smooth',block:'center'})}
+function scen(a){const s=a.scenarios,row=(n,x)=>`<tr><td>${n}</td><td class="n">${money(x.revenue)}</td><td class="n">${signed(x.profit)}</td></tr>`;
+ return `<div class="scroll"><table><thead><tr><th>পরিস্থিতি</th><th class="n">আয়</th><th class="n">লাভ/লোকসান</th></tr></thead><tbody>${row('খারাপ',s.bad)}${row('গড়',s.base)}${row('ভালো',s.good)}</tbody></table></div><p class="muted">মোট খরচ ধরা হয়েছে ${money(s.cost)}।</p>`}
+function renderRep(rep,quiet){lastRep=rep;const s=rep.summary,t=rep.target,c=rep.comparison,conf=Math.round(s.confidence*100);
+ let h=`<div class="card pop"><span class="badge b-${esc(s.rating)}">${esc({go:'এগিয়ে যান',caution:'সতর্কতাসহ',no:'সুপারিশ নয়'}[s.rating]||'')}</span><h3 style="margin-top:10px;font-size:24px">${esc(s.headline_bn)}</h3><div class="muted">নির্ভরযোগ্যতা ${bn.format(conf)}%</div><div class="meter"><b style="width:${conf}%"></b></div>${s.review_recommended?'<p class="muted">তথ্য কম বা ঝুঁকি বেশি, তাই বিশেষজ্ঞকে দিয়ে যাচাই করানো ভালো।</p>':''}</div>`;
+ if(t)h+=`<div class="card pop"><h3>${esc(t.name_bn)} <span class="badge b-${esc(t.rating)}">${esc(t.rating_bn)}</span></h3>${scen(t)}${t.reasons_bn?.length?`<ul>${t.reasons_bn.map(r=>`<li>${esc(r)}</li>`).join('')}</ul>`:''}</div>`;
+ if(c){const m=(l,a)=>`<div class="mini"><strong>${l}: ${esc(a.name_bn)}</strong><br>গড় লাভ ${signed(a.scenarios.base.profit)}<br>খারাপ অবস্থায় ${signed(a.scenarios.bad.profit)}</div>`;h+=`<div class="card pop"><h3>বর্তমান বনাম নতুন ফসল</h3><div class="grid">${m('বর্তমান',c.current)}${m('নতুন',c.new)}</div><p>${esc(c.verdict_bn)}</p></div>`}
+ if(rep.own_yields?.length)h+=`<div class="card pop"><h3>আপনার নিজের আগের ফলন</h3><div class="grid">${rep.own_yields.map(y=>`<div class="mini"><strong>${esc(y.name_bn)}</strong><br>গড় ${bn.format(y.avg)} কেজি/শতাংশ (${bn.format(y.harvests)}বার)<br><span class="muted">সেরা ${bn.format(y.best)}, কম ${bn.format(y.worst)}। হিসাবের সারণি: ${bn.format(y.table_bad)}–${bn.format(y.table_good)}</span></div>`).join('')}</div><p class="muted" style="margin-bottom:0">এগুলো সেকশন ২-এ আপনার কাটা প্লটের বাস্তব ফলন।</p></div>`;
+ if(rep.alternatives?.length)h+=`<div class="card pop"><h3>বিকল্প ফসল</h3><div class="grid">${rep.alternatives.map(a=>`<div class="mini"><strong>${esc(a.name_bn)}</strong> <span class="badge b-${esc(a.rating)}">${esc(a.rating_bn)}</span><br>গড় লাভ ${signed(a.scenarios.base.profit)}</div>`).join('')}</div></div>`;
+ h+=`<div class="card pop"><h3>বিস্তারিত ব্যাখ্যা</h3>${md(rep.narrative_bn)}<p class="muted" style="margin-bottom:0">${rep.narrative_source==='llm'?'AI-লেখা ব্যাখ্যা, সংখ্যা মিলিয়ে যাচাই করা':'নিয়মভিত্তিক ব্যাখ্যা'}${rep.cached?' · আগের একই হিসাব থেকে':''}</p></div>`;
+ if(rep.evidence?.length)h+=`<div class="card pop"><h3>সূত্র</h3><ul>${rep.evidence.map(e=>`<li><strong>${esc(e.source)}</strong>${e.page?`, পৃষ্ঠা ${bn.format(e.page)}`:''}<br><span class="muted">${esc(e.snippet)}</span></li>`).join('')}</ul></div>`;
+ h+=`<div class="card pop"><h3>ফলাফল আরও নির্ভুল করুন</h3><div class="row"><div style="max-width:160px"><label for="ph">মাটির pH</label><input id="ph" type="number" step="0.1" min="3" max="10" placeholder="৬.৫"></div><button id="ref" style="align-self:flex-end">pH দিয়ে হালনাগাদ</button><button id="rev" style="align-self:flex-end">বিশেষজ্ঞ রিভিউ চাই</button><button id="chk" style="align-self:flex-end">রিভিউয়ের অবস্থা</button></div><p class="muted" id="note"></p></div>`;
+ const b=$('#rep');b.innerHTML=h;b.classList.remove('hidden');
+ $('#ref').onclick=()=>{const v=parseFloat($('#ph').value);if(!(v>=3&&v<=10))return $('#note').textContent='৩ থেকে ১০ এর মধ্যে pH লিখুন।';analyze({sensors:{ph:v}})};
+ $('#rev').onclick=()=>guard('#e1',async()=>{await post(`/advisor/report/${encodeURIComponent(sid)}/request-review`);$('#note').textContent='বিশেষজ্ঞ রিভিউয়ের জন্য পাঠানো হয়েছে।'});
+ $('#chk').onclick=()=>guard('#e1',async()=>{const r=await api(`/advisor/report/${encodeURIComponent(sid)}`),n=r.review_note;$('#note').textContent=r.review_status==='pending'?'বিশেষজ্ঞের যাচাইয়ের অপেক্ষায় আছে।':r.review_status==='reviewed'&&n?`বিশেষজ্ঞের মত: ${({agree:'একমত',adjust:'কিছু বদলানো দরকার',disagree:'একমত নন'})[n.verdict]||''}${n.note?' — '+n.note:''}`:'এখনো রিভিউয়ের জন্য পাঠানো হয়নি।'});
+ if(!quiet)b.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'})}
+
+/* SECTION 2 */
+let meta=null,plots=[],P=null,logs=[],sum='',pn='',SR=null,pv='',experimentHistory=[],latestExperiment=null;
+const lvl={info:'b-info',warn:'b-warn',action:'b-action',critical:'b-critical'};
+async function loadPlots(){plots=await api('/twin/plots');chips();loadHarvests()}
+async function loadHarvests(){try{const s=await api('/twin/harvests/stats'),n={};meta?.crops.forEach(c=>n[c.id]=c.name_bn);const b=$('#hv');b.classList.toggle('hidden',!s.length);
+ b.innerHTML=s.length?`<h3>আপনার আগের ফলন (কাটা প্লট)</h3><div class="grid">${s.map(x=>`<div class="mini"><strong>${esc(n[x.crop_id]||x.crop_id)}</strong><br>গড় ${bn.format(x.avg_yield_kg_per_decimal)} কেজি/শতাংশ<br><span class="muted">${bn.format(x.harvests)}বার · সেরা ${bn.format(x.best)} · কম ${bn.format(x.worst)}</span></div>`).join('')}</div><p class="muted" style="margin-bottom:0">সেকশন ১-এর পরামর্শে এই ফলন যোগ হয়।</p>`:''}catch(_){}}
+const spark=L=>{if(L.length<2)return'';const W=300,H=70,x=i=>i/(L.length-1)*W,y=v=>H-4-Math.min(100,Math.max(0,v))/100*(H-8),ln=(k,c,mx=100)=>`<polyline fill="none" stroke="${c}" stroke-width="2" points="${L.map((r,i)=>x(i)+','+y(r[k]/mx*100)).join(' ')}"/>`;
+ return`<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="স্বাস্থ্য ও আর্দ্রতার লেখচিত্র">${ln('aw','#3de0a0',130)}${ln('health','#a3f20a')}</svg><div class="muted">সবুজ-হলুদ: স্বাস্থ্য · পান্না: মাটির আর্দ্রতা</div>`};
+function shrink(f,max=512){return new Promise((ok,no)=>{const im=new Image(),u=URL.createObjectURL(f);im.onload=()=>{const k=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);ok(c.toDataURL('image/jpeg',.85))};im.onerror=()=>no(new Error('ছবি পড়া যায়নি।'));im.src=u})}
+function speak(t){if(!('speechSynthesis' in window))return err('#e2','এই ফোন/ব্রাউজারে কণ্ঠস্বর সাপোর্ট নেই।');const u=new SpeechSynthesisUtterance(t);u.lang='bn-BD';speechSynthesis.cancel();speechSynthesis.speak(u)}
+function chips(){$('#chips').innerHTML=plots.map(p=>`<button class="chip" aria-pressed="${P&&P.id===p.id}" data-id="${esc(p.id)}">${esc(p.name||p.crop.name_bn)} · দিন ${bn.format(p.day)}</button>`).join('')+`<button class="p" id="new">+ নতুন প্লট</button>`;
+ document.querySelectorAll('#chips .chip').forEach(b=>b.onclick=()=>guard('#e2',()=>open(b.dataset.id)));$('#new').onclick=()=>{$('#create').classList.toggle('hidden')}}
+async function open(id){P=await api('/twin/plots/'+id);logs=await api(`/twin/plots/${id}/logs`);sum='';pn='';pv='';SR=null;experimentHistory=[];latestExperiment=null;try{SR=((await api(`/twin/plots/${id}/sensor-readings?limit=1`)).readings||[])[0]||null}catch(_){}try{experimentHistory=(await api(`/twin/plots/${id}/experiments`)).experiments||[]}catch(_){}chips();draw()}
+const meter=(l,v,max=100,low=40)=>`<div class="mini"><div class="muted">${l}</div><div class="v">${bn.format(Math.round(v))}</div><div class="meter"><b style="width:${Math.min(100,v/max*100)}%;${v<low?'background:var(--warn)':''}"></b></div></div>`;
+const WD=['রবি','সোম','মঙ্গল','বুধ','বৃহ','শুক্র','শনি'],WDE=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],dayName=iso=>(LANG==='en'?WDE:WD)[new Date(iso+'T00:00:00').getDay()],
+ wxIcon=f=>f.storm?'⛈️':f.rain_mm>=20?'🌧️':(f.rain_mm>=2||(f.prob||0)>=50)?'🌦️':f.tmax>=35?'☀️':'⛅',
+ pc=(v,lo,hi)=>Math.max(0,Math.min(100,(v-lo)/(hi-lo)*100)),
+ gauge=(ic,label,val,txt,lo,hi,ol,oh,st,stTxt,note)=>`<div class="gz ${st}"><div class="gz-h"><span>${ic} ${label}</span><i>${stTxt}</i></div><div class="gz-v">${txt}</div><div class="gz-bar"><s style="left:${pc(ol,lo,hi)}%;width:${pc(oh,lo,hi)-pc(ol,lo,hi)}%"></s><b style="left:${pc(val,lo,hi)}%"></b></div>${note?`<div class="gz-n">${note}</div>`:''}</div>`,
+ ring=(v,c)=>`<svg viewBox="0 0 36 36" class="ring" role="img" aria-label="স্বাস্থ্য ${v}%"><circle cx="18" cy="18" r="15.9" class="rb"/><circle cx="18" cy="18" r="15.9" class="rf" style="stroke:${c};stroke-dasharray:${v} 100"/><text x="18" y="20.5" text-anchor="middle">${bn.format(v)}%</text></svg>`,
+ FZ={water:'পানি',nutrient:'পুষ্টি',ph:'মাটির pH',temp:'তাপমাত্রা',salt:'লবণ',disease:'রোগ',light:'আলো'};
+function draw(){if(!P)return;const p=P,ended=p.status==='harvested'||p.status==='dead',sn=p.soil_now,st=p.stage||{};
+ const stages=p.stages.map((s,i)=>`<div class="${i<(st.idx??0)?'done':i===st.idx?'cur':''}" title="${esc(s.name_bn)}">${esc(s.name_bn)}</div>`).join('');
+ const stat={growing:'বেড়ে উঠছে',ready:'কাটার উপযোগী',harvested:'কাটা হয়েছে',dead:'মারা গেছে'}[p.status]||p.status;
+ const acts=ended?'':`<div class="row"><button data-a='{"type":"pump","on":${!p.pump_on}}'><span class="pump ${p.pump_on?'on':''}"></span>পাম্প ${p.pump_on?'বন্ধ':'চালু'} করুন</button><button data-a='{"type":"irrigate"}'>সেচ দিন</button><button data-a='{"type":"fertilize","nutrient":"N"}'>ইউরিয়া</button><button data-a='{"type":"fertilize","nutrient":"P"}'>টিএসপি</button><button data-a='{"type":"fertilize","nutrient":"K"}'>এমওপি</button><button data-a='{"type":"lime"}'>চুন</button><button data-a='{"type":"spray"}'>স্প্রে</button>${p.status==='ready'?`<button class="p" data-a='{"type":"harvest"}'>কর্তন করুন</button>`:''}</div>`;
+ const adv=ended?'':`<div class="row"><button class="p" data-adv="1">১ দিন</button><button class="p" data-adv="7">৭ দিন</button><button class="p" data-adv="30">৩০ দিন</button><button data-adv="end">শেষ পর্যন্ত চালান</button><label class="row" style="margin:0"><input type="checkbox" id="stop" checked style="width:auto;min-height:0"> জরুরি সতর্কতায় থামুন</label></div>`;
+ const th=p.thresholds,F=p.factors||{},W=p.weather,fc=p.forecast||[],ad=p.advice||[];
+ let wn='';{const L=(logs||[]).filter(x=>x.aw!=null).slice(-4);if(L.length>=2&&!p.pump_on&&!ended){const dd=L[L.length-1].day-L[0].day,sl=dd>0?(L[0].aw-L[L.length-1].aw)/dd:0;if(sl>0.5&&sn.aw>th.irrigate_below)wn=`এই হারে প্রায় ${bn.format(Math.max(1,Math.round((sn.aw-th.irrigate_below)/sl)))} দিনে সেচের সীমায় নামবে`}}
+ const npk=(ic,l,v)=>gauge(ic,l,v,bn.format(Math.round(v)),0,100,th.low_level,100,v<th.low_level*.6?'bad':v<th.low_level?'warn':'ok',v<th.low_level?'কম':'ভালো',''),
+  phSt=sn.ph<th.ph_min-.8||sn.ph>th.ph_max+.8?'bad':sn.ph<th.ph_min||sn.ph>th.ph_max?'warn':'ok',
+  ecSt=sn.ec>th.ec_tol*1.5?'bad':sn.ec>th.ec_tol?'warn':'ok',drSt=sn.disease_risk>=60?'bad':sn.disease_risk>=40?'warn':'ok',
+  awSt=sn.aw<th.emergency_below?'bad':sn.aw<th.irrigate_below?'warn':'ok',
+  col=p.health<50?'var(--bad)':p.health<75?'var(--warn)':'var(--lime)',
+  rainTot=fc.reduce((a,f)=>a+f.rain_mm,0),peak=fc.slice().sort((a,b)=>b.rain_mm-a.rain_mm)[0],
+  nMore=fc.filter(f=>f.vs_normal==='more').length,nLess=fc.filter(f=>f.vs_normal==='less').length,
+  trend=nMore>=4?'স্বাভাবিকের চেয়ে বেশি বৃষ্টির ধারা, নিকাশ ঠিক রাখুন।':nLess>=4?'স্বাভাবিকের চেয়ে কম বৃষ্টির ধারা, সেচ বেশি লাগতে পারে।':'বৃষ্টি মোটামুটি স্বাভাবিক।',
+  link=SR?`📡 সর্বশেষ সেন্সর: ${esc(new Date(SR.timestamp).toLocaleString())} · ${SR.quality==='suspect'?'মান সন্দেহজনক':'মান ঠিক'}${SR.calibrated_moisture_pct!=null?' · মাঠের আর্দ্রতা '+bn.format(Math.round(SR.calibrated_moisture_pct))+'%':''}`:'📡 কোনো সেন্সর যুক্ত নেই। নিচের মান টুইনের হিসাব (সিমুলেটেড)।';
+ $('#dash').innerHTML=`<div class="card pop tw-hero"><div class="tw-top"><div><h3>${esc(p.name||p.crop.name_bn)} <span class="badge ${p.status==='dead'?'b-critical':'b-go'}">${stat}</span></h3><div class="muted">${esc(p.crop.name_bn)} · ${bn.format(p.area)} শতাংশ · দিন ${bn.format(p.day)}/${bn.format(p.duration)} · ${esc(p.date)}</div></div><div class="tw-hp ${p.health<50?'bad':p.health<75?'warn':''}"><span>স্বাস্থ্য</span><b>${bn.format(p.health)}%</b></div></div>
+  <div class="stagebar tw-st">${stages}</div><div class="tw-prog" title="ফসলের জীবনচক্র"><b style="width:${Math.min(100,Math.max(0,p.day/p.duration*100))}%"></b></div>
+  ${p.result?`<p>ফলাফল: ${esc(JSON.stringify(p.result))}</p>`:''}${p.end_reason?`<p class="neg">${esc(p.end_reason)}</p>`:''}${(p.warnings||[]).map(w=>`<p class="tw-warn">⚠ ${esc(w)}</p>`).join('')}</div>
+  <div class="card pop" id="farm-experiment-lab"><div class="tw-h"><h3>🧪 Farm Experiment Lab</h3><span class="badge b-go">WHAT-IF</span></div>
+   <p class="muted">বাস্তব প্লট না বদলে একই শুরুর অবস্থা ও সিমুলেটেড আবহাওয়ায় দুটি সম্ভাবনা তুলনা করুন। এটি নিয়ন্ত্রিত rule-based simulation, বাস্তব ফলনের নিশ্চয়তা নয়।</p>
+   <div class="grid"><div><label for="expType">কোন সিদ্ধান্ত পরীক্ষা করবেন</label><select id="expType"><option value="irrigation">অটো সেচ চালু বনাম বন্ধ</option><option value="fertilizer">শুরুতে সার প্রয়োগের প্রভাব</option></select></div>
+    <div><label for="expDays">কত দিন সিমুলেট করবেন</label><select id="expDays"><option value="7">৭ দিন</option><option value="14" selected>১৪ দিন</option><option value="30">৩০ দিন</option><option value="60">৬০ দিন</option><option value="120">১২০ দিন</option></select></div>
+    <div id="expIrrField"><label for="expAuto">বিকল্প পরিস্থিতিতে অটো সেচ</label><select id="expAuto"><option value="true">চালু</option><option value="false">বন্ধ</option></select></div>
+    <div id="expNField" class="hidden"><label for="expNutrient">কোন সার পরীক্ষা করবেন</label><select id="expNutrient"><option value="N">ইউরিয়া (N)</option><option value="P">টিএসপি (P)</option><option value="K">এমওপি (K)</option></select></div>
+    <div><label for="expName">পরীক্ষার নাম (ঐচ্ছিক)</label><input id="expName" maxlength="80" placeholder="যেমন: সেচের বিকল্প পরিকল্পনা"></div>
+   </div>
+   <div class="row" style="margin-top:12px"><button class="p" id="runExperiment">🧪 পরীক্ষা চালান</button><span class="muted">লাইভ প্লট বা পাম্পে কোনো পরিবর্তন হবে না।</span></div>
+   <div id="expResult" style="margin-top:14px">${latestExperiment?`<h4>সর্বশেষ পরীক্ষার ফল</h4><div class="grid"><div class="mini"><strong>স্বাস্থ্য</strong><div class="v">${bn.format(latestExperiment.baseline.health)}% → ${bn.format(latestExperiment.scenario.health)}%</div><div class="muted">পার্থক্য ${latestExperiment.delta.health>0?'+':''}${bn.format(latestExperiment.delta.health)} পয়েন্ট</div></div><div class="mini"><strong>পানি ব্যবহার</strong><div class="v">${bn.format(latestExperiment.baseline.water_l)} → ${bn.format(latestExperiment.scenario.water_l)} L</div><div class="muted">পার্থক্য ${latestExperiment.delta.water_l>0?'+':''}${bn.format(latestExperiment.delta.water_l)} L</div></div><div class="mini"><strong>আনুমানিক ফলন</strong><div class="v">${bn.format(latestExperiment.baseline.estimated_yield_kg)} → ${bn.format(latestExperiment.scenario.estimated_yield_kg)} কেজি</div><div class="muted">পার্থক্য ${latestExperiment.delta.estimated_yield_kg>0?'+':''}${bn.format(latestExperiment.delta.estimated_yield_kg)} কেজি</div></div><div class="mini"><strong>আনুমানিক লাভ</strong><div class="v">৳${bn.format(latestExperiment.baseline.estimated_profit_bdt)} → ৳${bn.format(latestExperiment.scenario.estimated_profit_bdt)}</div><div class="muted">পার্থক্য ${latestExperiment.delta.estimated_profit_bdt>0?'+':''}৳${bn.format(latestExperiment.delta.estimated_profit_bdt)}</div></div></div><p class="muted">${esc(latestExperiment.explanation_bn)}</p>`:''}</div>
+   <div id="expHistory" style="margin-top:14px">${experimentHistory.length?`<h4>আগের পরীক্ষা</h4>${experimentHistory.slice().reverse().map(e=>`<div class="mini" style="margin:8px 0"><strong>${esc(e.name)}</strong><div class="muted">দিন ${bn.format(e.plot_day_start)} থেকে · ${bn.format(e.horizon_days)} দিনের পরীক্ষা · ${esc(e.intervention_bn)}</div><div>স্বাস্থ্য পরিবর্তন: ${e.delta.health>0?'+':''}${bn.format(e.delta.health)} পয়েন্ট · পানি: ${e.delta.water_l>0?'+':''}${bn.format(e.delta.water_l)} লিটার · আনুমানিক লাভের পার্থক্য: ${e.delta.estimated_profit_bdt>0?'+':''}৳${bn.format(e.delta.estimated_profit_bdt)}</div></div>`).join('')}`:'<p class="muted">এখনো কোনো পরীক্ষা সংরক্ষিত নেই।</p>'}</div>
+  </div>
+  ${ad.length?`<div class="card pop"><div class="tw-h"><h3>🎯 এখন কী করবেন</h3></div><p class="muted" style="margin:0 0 6px">টুইনের হিসাব থেকে আজকের ধাপ। সার ও স্প্রের মাত্রা স্থানীয় কৃষি অফিসে যাচাই করুন।</p>${ad.map(a=>`<div class="adv ${esc(a.level)}"><span class="adv-i" aria-hidden="true">${a.icon}</span><div class="adv-b"><strong>${esc(a.title_bn)}</strong><p>${esc(a.text_bn)}</p></div>${a.action?`<button class="${a.level==='critical'||a.level==='action'?'p':''}" data-a='${JSON.stringify(a.action)}'>${esc(a.btn_bn)}</button>`:''}</div>`).join('')}</div>`:''}
+  <div class="card pop"><div class="tw-h"><h3>📟 সেন্সরের অবস্থা</h3><span class="muted">সাদা দাগ = এখনকার মান, সবুজ অংশ = ভালো সীমা</span></div>
+   <div class="gzs">${gauge('💧','পানি',sn.aw,bn.format(sn.aw)+'%',0,130,th.irrigate_below,115,awSt,awSt==='ok'?'ভালো':awSt==='warn'?'কম':'জরুরি',wn||`সেচ শুরু ${bn.format(th.irrigate_below)}% এর নিচে`)}${npk('🌿','নাইট্রোজেন',sn.N)}${npk('🟠','ফসফরাস',sn.P)}${npk('🟣','পটাশ',sn.K)}${gauge('🧪','pH',sn.ph,String(sn.ph),4,9,th.ph_min,th.ph_max,phSt,phSt==='ok'?'ভালো':sn.ph<th.ph_min?'অম্লীয়':'ক্ষারীয়',`চাই ${th.ph_min}–${th.ph_max}`)}${gauge('🧂','লবণাক্ততা',sn.ec,sn.ec+' dS/m',0,Math.max(6,th.ec_tol*2),0,th.ec_tol,ecSt,ecSt==='ok'?'ভালো':'বেশি',`সহনসীমা ${th.ec_tol}`)}${gauge('🦠','রোগের ঝুঁকি',sn.disease_risk,bn.format(sn.disease_risk),0,100,0,40,drSt,drSt==='ok'?'কম':drSt==='warn'?'মাঝারি':'বেশি','')}</div>
+   <p class="tw-link">${link}</p><div style="margin-top:14px">${spark(logs)}</div></div>
+  <div class="card pop"><h3>🌱 গাছের অবস্থা</h3><div class="tw-plant">${ring(p.health,col)}<div>${Object.keys(FZ).filter(k=>F[k]!=null).map(k=>{const v=Math.round(F[k]*100);return`<div class="fz"><span>${FZ[k]}</span><div class="meter"><b class="${v<70?'d':v<90?'w':''}" style="width:${v}%"></b></div><em>${bn.format(v)}%</em></div>`}).join('')||'<p class="muted">সময় এগোলে গাছের চাপের হিসাব আসবে।</p>'}<p class="muted" style="margin:8px 0 0">১০০% মানে ওই বিষয়ে গাছের কোনো চাপ নেই। কম মানই এখন সমস্যার কারণ।</p></div></div>
+   <div class="est"><div class="mini"><div class="muted">পর্যায়</div><div class="v" style="font-size:18px">${esc(st.name_bn||'')}</div></div>${p.estimate?`<div class="mini"><div class="muted">আনুমানিক ফলন</div><div class="v" style="font-size:20px">${bn.format(Math.round(p.estimate.yield_kg))} কেজি</div></div><div class="mini"><div class="muted">আনুমানিক লাভ</div><div class="v" style="font-size:20px">${signed(p.estimate.profit)}</div></div>`:''}</div></div>
+  ${ended?'':`<div class="card pop"><h3>🌦️ আবহাওয়া</h3><div class="wxn">${W?`<div class="mini"><div>আজ তাপ</div><b>${bn.format(W.tmin)}–${bn.format(W.tmax)}°</b></div><div class="mini"><div>বৃষ্টি</div><b>${bn.format(W.rain_mm)} মিমি</b></div><div class="mini"><div>বাতাসের আর্দ্রতা</div><b>${bn.format(W.rh)}%</b></div><div class="mini"><div>রোদ</div><b>${bn.format(W.sun_h)} ঘণ্টা</b></div><div class="mini"><div>পানি উবে যায়</div><b>${bn.format(W.et0)} মিমি</b></div>`:''}</div>
+   <div class="tw-h"><h3 style="font-size:17px">আগামী ৭ দিন</h3></div><div class="fc">${fc.map((f,i)=>`<div class="fcd ${i===0?'today':''}"><small>${dayName(f.date)}</small><small>${esc(f.date.slice(5))}</small><div class="ic">${wxIcon(f)}</div><b>${bn.format(Math.round(f.tmax))}°</b><div class="rb"><i style="height:${Math.min(100,f.rain_mm/40*100)}%"></i></div><b style="font-size:13px">${bn.format(Math.round(f.rain_mm))} মিমি</b><div class="pr">${bn.format(f.prob)}%</div></div>`).join('')}</div>
+   <p class="muted" style="margin:12px 0 0">৭ দিনে মোট প্রায় ${bn.format(Math.round(rainTot))} মিমি বৃষ্টির সম্ভাবনা${peak&&peak.rain_mm>=5?`, সবচেয়ে বেশি ${dayName(peak.date)}${LANG==='en'?'':'বার'} (${bn.format(Math.round(peak.rain_mm))} মিমি)`:''}। ${trend}<br>পূর্বাভাস এখন সিমুলেটেড। আসল আবহাওয়া API যুক্ত হলে বদলে যাবে।</p></div>`}
+  <div class="card pop"><h3>📸 দৈনিক চেক-ইন</h3><p class="muted" style="margin:0">প্রতিদিন একটি পাতার ছবি দিন ও টুইনের প্রশ্নের উত্তর দিন, তাহলে পরামর্শ আরও নির্ভুল হবে।</p>
+   ${ended?'':`<label class="drop" for="lf">${pv?`<img src="${pv}" alt="আপলোড করা পাতার ছবি">`:'<span>📷 ছবি তুলুন বা বেছে নিন</span>'}<small>${pv?'অন্য ছবি দিতে এখানে চাপুন':'পাতার কাছ থেকে, পরিষ্কার আলোয়'}</small></label><input id="lf" class="sr" type="file" accept="image/*" capture="environment">${pn?`<div class="pn">${esc(pn)}</div>`:''}`}
+   ${p.questions.length?`<h4 style="margin:16px 0 0">টুইন আপনাকে জিজ্ঞেস করছে</h4>${p.questions.map(q=>`<div style="margin:10px 0"><strong>${esc(q.text_bn)}</strong><div class="row" style="margin-top:6px">${q.options.map(o=>`<button data-q="${esc(q.id)}" data-v="${esc(o.value)}">${esc(o.label_bn)}</button>`).join('')}</div></div>`).join('')}`:'<p class="muted" style="margin:12px 0 0">আজ টুইনের কোনো নতুন প্রশ্ন নেই।</p>'}
+   ${ended?'':`<details class="dd"><summary>মাপা মান নিজে দিন (pH, লবণ, আর্দ্রতা)</summary><p class="muted">pH স্ট্রিপ বা মাটির সেন্সরের মাপা মান দিলে সিমুলেটেড মানের জায়গায় বসে। ফাঁকা ঘর বাদ যাবে।</p><div class="grid"><div><label for="rPh">pH</label><input id="rPh" type="number" step="0.1" min="3.5" max="9.5"></div><div><label for="rEc">লবণাক্ততা (dS/m)</label><input id="rEc" type="number" step="0.1" min="0" max="20"></div><div><label for="rAw">মাটির আর্দ্রতা (%)</label><input id="rAw" type="number" step="1" min="0" max="160"></div></div><div class="row" style="margin-top:12px"><button id="rd">মাপা মান পাঠান</button></div></details>`}</div>
+  <div class="card pop"><h3>সতর্কতা</h3>${p.alerts.length?p.alerts.slice(0,6).map(a=>`<div class="alert ${esc(a.level)}"><span class="badge ${lvl[a.level]||'b-info'}">${esc(a.level)}</span> <strong>${esc(a.title_bn)}</strong>${esc(a.text_bn)}<div class="why"><button data-why="${esc(a.key)}" style="min-height:36px;padding:4px 10px">কেন?</button><span id="w-${esc(a.key)}"></span></div></div>`).join(''):'<p class="muted">কোনো সতর্কতা নেই।</p>'}</div>
+  <div class="card pop"><h3>⚙️ সেটিংস</h3><div class="set-h"><label class="sw"><input type="checkbox" id="cfA" ${p.config.auto_irrigation?'checked':''}><i></i>স্বয়ংক্রিয় সেচ</label><label class="sw"><input type="checkbox" id="cfI" ${p.config.auto_inputs?'checked':''}><i></i>স্বয়ংক্রিয় সার/চুন/স্প্রে</label><label class="sw"><input type="checkbox" id="cfS" ${p.config.sms_enabled?'checked':''}><i></i>জরুরি SMS</label></div>
+   <div class="row" style="margin-top:10px"><div style="max-width:220px"><label for="cfP">মোবাইল ${p.config.phone_set?'('+esc(p.config.phone_masked)+')':''}</label><input id="cfP" inputmode="tel" placeholder="${p.config.phone_set?'বদলাতে নতুন নম্বর':'01712345678'}"></div><button id="cfb" style="align-self:flex-end">সেভ করুন</button></div>
+   <div class="tools"><button id="sumb">📝 বাংলা সারাংশ</button>${sum?'<button id="say">🔊 শুনুন</button>':''}<span class="sp"></span><button class="danger" id="del">🗑 প্লট মুছুন</button></div>${sum?`<p>${esc(sum)}</p>`:''}</div>`;
+ const d=$('#dash'),run=fn=>guard('#e2',async()=>{await fn();await loadPlots();draw()});
+ const expType=$('#expType'),syncExpFields=()=>{const fert=expType.value==='fertilizer';$('#expIrrField').classList.toggle('hidden',fert);$('#expNField').classList.toggle('hidden',!fert)};
+ expType.onchange=syncExpFields;syncExpFields();
+ $('#runExperiment').onclick=()=>run(async()=>{const kind=$('#expType').value,body={name:$('#expName').value.trim(),horizon_days:+$('#expDays').value,intervention:kind};if(kind==='irrigation')body.irrigation_auto=$('#expAuto').value==='true';else body.nutrient=$('#expNutrient').value;const r=await post(`/twin/plots/${P.id}/experiments`,body);latestExperiment=r;experimentHistory.unshift(r);experimentHistory=experimentHistory.slice(0,20);P=await api(`/twin/plots/${P.id}`);});
+ d.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>run(async()=>{const r=await post(`/twin/plots/${P.id}/action`,JSON.parse(b.dataset.a));P=r.plot;logs=await api(`/twin/plots/${P.id}/logs`)}));
+ d.querySelectorAll('[data-adv]').forEach(b=>b.onclick=()=>run(async()=>{const end=b.dataset.adv==='end';const r=await post(`/twin/plots/${P.id}/advance`,{days:end?400:+b.dataset.adv,stop_on_alert:end?false:$('#stop').checked,auto_harvest:end});P=r.plot;logs=await api(`/twin/plots/${P.id}/logs`);sum=''}));
+ d.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>run(async()=>{const r=await post(`/twin/plots/${P.id}/answers`,{answers:{[b.dataset.q]:b.dataset.v}});P=r.plot}));
+ d.querySelectorAll('[data-why]').forEach(b=>b.onclick=()=>guard('#e2',async()=>{const w=await api(`/twin/plots/${P.id}/why/${encodeURIComponent(b.dataset.why)}`);$('#w-'+b.dataset.why).innerHTML=`<br>${esc(w.rule_bn)}<br>`+w.facts.map(f=>`${esc(f.label_bn)}: <strong>${esc(f.value)}</strong>`).join(' · ')}));
+ $('#sumb').onclick=()=>run(async()=>{sum=(await api(`/twin/plots/${P.id}/summary`)).text});
+ $('#say')?.addEventListener('click',()=>speak(sum));
+ $('#rd')?.addEventListener('click',()=>run(async()=>{const v=k=>$(k).value===''?undefined:+$(k).value,body={ph:v('#rPh'),ec:v('#rEc'),moisture_pct:v('#rAw')};if(Object.values(body).every(x=>x===undefined))throw new Error('অন্তত একটি মান লিখুন।');P=(await post(`/twin/plots/${P.id}/readings`,body)).plot}));
+ $('#lf')?.addEventListener('change',e=>{const f=e.target.files[0];if(f)run(async()=>{pv=await shrink(f);const r=await post(`/twin/plots/${P.id}/photo`,{image_b64:pv}),x=r.prediction;P=r.plot;pn=x.status==='no_model'?'এই ফসলের জন্য ছবি-মডেল এখনো নেই। প্রশ্নের উত্তর দিয়ে অবস্থা জানান।':x.status==='unknown'?'মডেল নিশ্চিত নয়, বিশেষজ্ঞের কাছে পাঠানো হয়েছে।':`${x.healthy?'সুস্থ দেখাচ্ছে':'সম্ভাব্য রোগ: '+(x.label_bn||x.label)} (নিশ্চয়তা ${bn.format(Math.round(x.score*100))}%)${x.needs_review?' — বিশেষজ্ঞের যাচাই চাওয়া হয়েছে':''}। এটি শুধু পরামর্শ।`})});
+ $('#cfb')?.addEventListener('click',()=>run(async()=>{const b={auto_irrigation:$('#cfA').checked,auto_inputs:$('#cfI').checked,sms_enabled:$('#cfS').checked};const ph=$('#cfP').value.trim();if(ph)b.phone=ph;P=await post(`/twin/plots/${P.id}/config`,b)}));
+ $('#evb')?.addEventListener('click',()=>guard('#e2',async()=>{const ev=await api(`/twin/plots/${P.id}/events`);$('#evl').innerHTML=ev.length?ev.slice(0,40).map(e=>{const p=e.payload||{};return`<div class="alert"><span class="badge b-info">${esc(e.kind)}</span> <span class="muted">দিন ${bn.format(e.day)}</span> ${esc(p.title_bn?p.title_bn+'। ':'')}${esc(p.text_bn||'')}</div>`}).join(''):'<p class="muted">কোনো ঘটনা নেই।</p>'}));
+ $('#del').onclick=()=>{if(confirm(T('এই প্লট ও তার সব তথ্য মুছে যাবে। নিশ্চিত?')))run(async()=>{await api('/twin/plots/'+P.id,{method:'DELETE'});P=null;pn='';$('#dash').classList.add('hidden')})};
+ $('#dash').classList.remove('hidden')}
+$('#mk').onclick=()=>guard('#e2',async()=>{
+ const body={crop_id:$('#cCrop').value,start_date:$('#cDate').value||undefined,area_decimal:+$('#cArea').value,soil_type:$('#cSoil').value,ph:+$('#cPh').value,ec:+$('#cEc').value};if($('#cName').value.trim())body.name=$('#cName').value.trim();
+ if(!(body.area_decimal>0))throw new Error('জমির পরিমাণ লিখুন।');
+ P=await post('/twin/plots',body);logs=[];$('#create').classList.add('hidden');await loadPlots();draw()});
+async function initApp(){err('#e2','');try{meta=await api('/twin/meta');meta.crops.forEach(c=>{if(c.name_en)EN[c.name_bn]=c.name_en});meta.soils.forEach(s=>{if(s.name_en)EN[s.name_bn]=s.name_en});buildRE();$('#cCrop').innerHTML=meta.crops.map(c=>`<option value="${esc(c.id)}">${esc(c.name_bn)}</option>`).join('');$('#cSoil').innerHTML=meta.soils.map(c=>`<option value="${esc(c.id)}">${esc(c.name_bn)}</option>`).join('');$('#cDate').value=new Date().toISOString().slice(0,10);await loadPlots();if(!plots.length)$('#create').classList.remove('hidden')}catch(e){err('#e2',e.message)}}
+
+/* AUTH */
+const authErr=m=>{$('#eA').textContent=m||'';$('#eA').classList.toggle('hidden',!m)},authMsg=m=>{$('#mA').textContent=m||'';$('#mA').classList.toggle('hidden',!m)};
+function tab(k){['L','R','D'].forEach(x=>$('#f'+x).classList.toggle('hidden',x!==k));$('#tL').setAttribute('aria-pressed',k==='L');$('#tR').setAttribute('aria-pressed',k==='R');$('#tabs').classList.toggle('hidden',k==='D');authErr('');authMsg('')}
+function showAuth(m){$('#auth').classList.remove('hidden');tab(CFG.auth_required?'L':'D');authErr(m)}
+function applyMe(){const r=ME?.role||'farmer';$('#me').classList.remove('hidden');$('#meName').textContent=ME?.full_name||ME?.email||ME?.id||'';$('#meRole').textContent=ROLE_BN[r]||r;$('#navx').classList.toggle('hidden',!(r==='expert'||r==='admin'));$('#xu').classList.toggle('hidden',r!=='admin')}
+async function logout(expired){if(!expired&&CFG.auth_required){try{await fetch('/auth/logout',{method:'POST',headers:authHeaders()})}catch(_){}}
+ ['gt_token','gt_refresh','gt_user','gt_dev_user','gt_dev_role'].forEach(k=>store.set(k,null));ME=null;P=null;plots=[];sid=null;sum='';pn='';lastRep=null;lastTrust=null;trCrop=null;$('#tr').innerHTML='';
+ ['#dash','#rep','#q','#me','#navx','#hv'].forEach(s=>$(s).classList.add('hidden'));$('#chips').innerHTML='';showAuth(expired===true?'সেশন শেষ, আবার লগইন করুন।':'');show('top',true)}
+async function authPost(path,body){const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});let d={};try{d=await r.json()}catch(_){}
+ if(!r.ok)throw new Error(typeof d.detail==='string'?d.detail:Array.isArray(d.detail)?'তথ্য সঠিক নয়: ইমেইল ও ৮+ অক্ষরের পাসওয়ার্ড (অক্ষর ও সংখ্যা) দিন।':'সমস্যা হয়েছে, আবার চেষ্টা করুন।');return d}
+async function authGo(fn){if(busy)return;authErr('');authMsg('');lock(true);try{const d=await fn();if(d.status==='confirm_email'){tab('L');authMsg(d.message_bn);return}
+ saveSession(d);$('#auth').classList.add('hidden');applyMe();await initApp()}catch(x){authErr(x.message)}finally{lock(false)}}
+$('#tL').onclick=()=>tab('L');$('#tR').onclick=()=>tab('R');
+$('#fL').onsubmit=e=>{e.preventDefault();authGo(()=>authPost('/auth/login',{email:$('#lE').value.trim(),password:$('#lP').value}))};
+$('#fR').onsubmit=e=>{e.preventDefault();if($('#rP').value.length<8)return authErr('পাসওয়ার্ড অন্তত ৮ অক্ষরের হতে হবে।');authGo(()=>authPost('/auth/register',{full_name:$('#rN').value.trim(),phone:$('#rM').value.trim(),email:$('#rE').value.trim(),password:$('#rP').value,role_request:$('#rR').value}))};
+$('#fD').onsubmit=e=>{e.preventDefault();const u=($('#dU').value.trim().replace(/[^\w-]/g,'')||'farmer1'),r=$('#dR').value;store.set('gt_dev_user',u);store.set('gt_dev_role',r);ME={id:u,role:r,full_name:u};$('#auth').classList.add('hidden');applyMe();initApp()};
+$('#out').onclick=e=>{e.preventDefault();logout()};
+async function boot(){try{CFG=await (await fetch('/auth/config')).json()}catch(_){CFG={auth_required:false}}
+ if(CFG.auth_required){if(store.get('gt_token')){try{let u={};try{u=JSON.parse(store.get('gt_user')||'{}')}catch(_){}ME={...u,...await api('/auth/me')};applyMe();return initApp()}catch(_){}}return showAuth()}
+ const du=store.get('gt_dev_user');if(du){ME={id:du,role:store.get('gt_dev_role')||'farmer',full_name:du};applyMe();return initApp()}showAuth()}
+
+const EN={"চালিয়ে যেতে লগইন করুন": "Sign in to continue", "লগইন": "Log in", "নতুন একাউন্ট": "New account", "ইমেইল": "Email", "পাসওয়ার্ড": "Password", "নাম": "Name", "মোবাইল (ঐচ্ছিক)": "Mobile (optional)", "পাসওয়ার্ড (৮+ অক্ষর, অক্ষর ও সংখ্যা)": "Password (8+ chars, letters and digits)", "আমি": "I am", "কৃষক": "Farmer", "কৃষি বিশেষজ্ঞ (অ্যাডমিন অনুমোদন লাগবে)": "Agriculture expert (needs admin approval)", "একাউন্ট খুলুন": "Create account", "ডেভ মোড: সার্ভারে লগইন বন্ধ (": "Dev mode: server login is off (", "নাম ও ভূমিকা বেছে নিন": "Choose a name and role", "প্রোডাকশনে এটি দেখাবে না": "This is not shown in production", "নাম / আইডি": "Name / ID", "ভূমিকা": "Role", "বিশেষজ্ঞ": "Expert", "অ্যাডমিন": "Admin", "ঢুকুন": "Enter", "মেনু": "Menu", "হোম": "Home", "চাষের পরামর্শ": "Crop advice", "প্লট টুইন": "Plot twin", "বিশেষজ্ঞ / অ্যাডমিন": "Expert / Admin", "বের হন": "Log out", "জমি আর ফসলের কথা লিখুন": "Describe your land and crop", "ঝুঁকি, তিনটি অবস্থার লাভ-লোকসান আর বর্তমান বনাম নতুন ফসলের তুলনা পাবেন": "You get the risk, profit and loss in three scenarios, and a current vs new crop comparison", "আপনার কথা লিখুন": "Write in your own words", "আমার ৩০ শতাংশ জমি আছে, গত ৪ বছর ধান চাষ করেছি, এখন ভুট্টা চাষ করতে চাই": "I have 30 decimal of land, grew rice for the last 4 years, and now want to grow maize", "বিশ্লেষণ করুন": "Analyse", "উদাহরণ বসান": "Insert example", "একটি প্লটের বীজ থেকে কর্তন পর্যন্ত জীবনচক্র": "Life cycle of one plot, from seed to harvest", "সময় এগোয় আপনি \"এগিয়ে যান\" চাপলে": "Time moves when you press \"Advance\"", "এখন সেন্সর সিমুলেটেড": "Sensors are simulated for now", "নতুন প্লট": "New plot", "ফসল": "Crop", "জমি (শতাংশ)": "Land (decimal)", "মাটি": "Soil", "লবণাক্ততা (dS/m)": "Salinity (dS/m)", "বপনের তারিখ": "Sowing date", "পূর্বের জমি": "East field", "প্লট তৈরি করুন": "Create plot", "WhatsApp ও SMS-এ পরামর্শ": "Advice on WhatsApp and SMS", "ইন্টারনেট ধীর বা অ্যাপ নেই? ফোনের মেসেজ থেকেই পরামর্শ ও সতর্কতা পাওয়ার নিয়ম": "Slow internet or no app? How to get advice and alerts from phone messages", "অবস্থা": "Status", "কীভাবে চালু করবেন": "How to start", "মেসেজ কমান্ড": "Message commands", "উদাহরণ কথোপকথন": "Example chat", "সার্ভার সেটআপ": "Server setup", "সীমাবদ্ধতা": "Limits", "এখন কোনটি তৈরি, কোনটি বাকি": "What is built and what is left", "তৈরি": "Built", "সিমুলেটেড": "Simulated", "বাকি": "Pending", "জরুরি সতর্কতা SMS: প্লটে": "Emergency alert SMS: when the plot has", "ও ফোন নম্বর দিলে": "and a phone number is set,", "সতর্কতা SMS হয়ে যায়": "alerts are also sent by SMS", "থাকলে মেসেজ আসলে যায় না, শুধু": "the message is not really sent, only", "ইভেন্ট হিসেবে লগ হয়": "logged as an event", "ফোন থেকে মেসেজ পাঠিয়ে পরামর্শ চাওয়া (ইনবাউন্ড SMS / WhatsApp)": "Asking for advice by sending a message from the phone (inbound SMS / WhatsApp)", "এর জন্য ব্যাকএন্ডে এখনো কোনো এন্ডপয়েন্ট নেই": "The backend has no endpoint for this yet", "নিচের কমান্ডগুলো প্রস্তাবিত নকশা": "The commands below are a proposed design", "সেকশন ২-এ প্লট তৈরি করুন": "Create a plot in Section 2", "প্লটের সেটিংসে ফোন নম্বর দিন (": "Enter a phone number in the plot settings (", "ফরম্যাট) এবং SMS চালু করুন": "format) and turn SMS on", "সার্ভারে SMS গেটওয়ে যুক্ত করুন (নিচে \"সার্ভার সেটআপ\")": "Connect an SMS gateway on the server (see \"Server setup\" below)", "এরপর জরুরি সতর্কতা নিজে থেকে মেসেজে আসবে": "After that, emergency alerts arrive by message on their own", "মেসেজ কমান্ড (প্রস্তাবিত)": "Message commands (proposed)", "পাঠান": "Send", "কী হবে": "What happens", "ব্যবহৃত এন্ডপয়েন্ট": "Endpoint used", "আপনার কথা": "your text", "চাষের পরামর্শ, প্রশ্ন থাকলে উত্তর চাইবে": "Crop advice; asks for answers if it has questions", "প্রশ্নের উত্তর (বিকল্প নম্বর)": "Answer to questions (option numbers)", "আপনার প্লটের তালিকা": "List of your plots", "প্লট ১-এর অবস্থা ও সতর্কতা": "Status and alerts of plot 1", "পাম্প চালু বা বন্ধ": "Pump on or off", "সর্বশেষ সতর্কতার কারণ": "Reason for the latest alert", "৩০ শতাংশ জমি, ৪ বছর ধান, এবার ভুট্টা": "30 decimal land, 4 years rice, now maize", "সেচের অবস্থা কেমন? ১ ভালো ২ আংশিক ৩ নেই": "How is irrigation? 1 Good 2 Partial 3 None", "ভুট্টা: সতর্কতাসহ এগিয়ে যান": "Maize: go ahead with caution", "গড় লাভ আনুমানিক ... টাকা, খারাপ অবস্থায় ... টাকা": "Expected average profit about ... BDT, in the bad case ... BDT", "বিস্তারিত অ্যাপে": "Details in the app", "উপরের টাকার অঙ্ক উদাহরণ নয়, বাস্তব উত্তরে ব্যাকএন্ডের হিসাব বসবে": "The amounts above are placeholders; real replies use the backend calculation", "ব্যাকএন্ড কোনো নির্দিষ্ট গেটওয়ে ধরে নেয় না": "The backend does not assume any particular gateway", "-এ webhook দিলে প্রতিটি মেসেজ এই JSON হিসেবে POST হয়:": "If you set a webhook in it, every message is POSTed as this JSON:", "আপনার ছোট অ্যাডাপ্টার এই JSON নিয়ে বাংলাদেশি SMS গেটওয়ে বা WhatsApp Business API-তে পাঠাবে": "Your small adapter takes this JSON and forwards it to a Bangladeshi SMS gateway or the WhatsApp Business API", "ইনবাউন্ড কমান্ডের জন্য উল্টো দিকে একটি webhook এন্ডপয়েন্ট লাগবে, যা ফোন নম্বর থেকে ব্যবহারকারী চিনে উপরের এন্ডপয়েন্টগুলো ডাকবে": "For inbound commands you also need a webhook endpoint in the other direction that identifies the user from the phone number and calls the endpoints above", "বাংলা SMS ইউনিকোড হয়, তাই এক মেসেজে প্রায় ৭০ অক্ষর": "Bangla SMS is Unicode, so one message holds about 70 characters", "৩০০ অক্ষরের উত্তর কয়েকটি মেসেজে ভাগ হবে": "A 300-character reply is split into several messages", "সার্ভার \"ফার্মার অফলাইন\" নিজে বুঝতে পারে না": "The server cannot detect \"farmer offline\" by itself", "এখন জরুরি সতর্কতা সব সময় SMS-ও পাঠায়": "For now, emergency alerts are always also sent by SMS", "বীজ, সার ও কীটনাশকের মাত্রা স্থানীয় কৃষি অফিসে যাচাই করুন": "Check seed, fertiliser and pesticide doses with the local agriculture office", "বিশেষজ্ঞ ও অ্যাডমিন": "Experts and admins", "কৃষকের পাঠানো ঝুঁকিপূর্ণ পরামর্শ ও অনিশ্চিত পাতার ছবি যাচাই করুন": "Review risky advice and uncertain leaf photos sent by farmers", "এটি পরামর্শ মাত্র, চূড়ান্ত সিদ্ধান্ত আপনার": "This is advice only; the final decision is yours", "টাকা": "BDT", "সার্ভারের সাথে যোগাযোগ করা যাচ্ছে না": "Cannot reach the server", "ইন্টারনেট বা সার্ভার চালু আছে কি না দেখুন": "Check the internet and that the server is running", "সেশন শেষ, আবার লগইন করুন": "Session ended, please log in again", "এই কাজের অনুমতি নেই": "You are not allowed to do this", "পাওয়া যায়নি, নতুন করে শুরু করুন": "Not found, please start again", "অনেকবার চেষ্টা হয়েছে, একটু পরে আবার করুন": "Too many attempts, try again shortly", "সমস্যা হয়েছে": "Something went wrong", "আবার চেষ্টা করুন": "Please try again", "পরামর্শ নিন": "Get advice", "প্লট টুইন দেখুন": "See plot twin", "লাইভ টুইন": "Live twin", "মাটির আর্দ্রতা": "Soil moisture", "আনুমানিক বাজার": "Approx. market price", "কেজি": "kg", "প্রাক-রোপণ ঝুঁকি": "Pre-planting risk", "স্লাইড": "Slide", "আপনার জমি ও ফসলের কথা একটু লিখুন": "Please write a little about your land and crop", "আরও কিছু তথ্য দরকার": "We need a little more information", "জানা না থাকলে \"জানি না\" বেছে নিন, তখন অনুমান ধরা হবে এবং নির্ভরযোগ্যতা কমবে": "If you do not know, choose \"Don't know\"; an assumption is used and confidence drops", "উত্তর পাঠান": "Send answers", "ধাপ": "Step", "পরিস্থিতি": "Scenario", "আয়": "Revenue", "লাভ/লোকসান": "Profit/Loss", "খারাপ": "Bad", "গড়": "Average", "ভালো": "Good", "মোট খরচ ধরা হয়েছে": "Total cost assumed", "এগিয়ে যান": "Go ahead", "সতর্কতাসহ": "With caution", "সুপারিশ নয়": "Not recommended", "নির্ভরযোগ্যতা": "Confidence", "তথ্য কম বা ঝুঁকি বেশি, তাই বিশেষজ্ঞকে দিয়ে যাচাই করানো ভালো": "Information is thin or risk is high, so an expert check is advisable", "গড় লাভ": "Average profit", "খারাপ অবস্থায়": "In the bad case", "বর্তমান বনাম নতুন ফসল": "Current vs new crop", "বর্তমান": "Current", "নতুন": "New", "আপনার নিজের আগের ফলন": "Your own past yields", "কেজি/শতাংশ": "kg/decimal", "বার": "×", "সেরা": "best", "কম": "low", "হিসাবের সারণি": "table range", "এগুলো সেকশন ২-এ আপনার কাটা প্লটের বাস্তব ফলন": "These are real yields of your harvested plots in Section 2", "বিকল্প ফসল": "Alternative crops", "বিস্তারিত ব্যাখ্যা": "Detailed explanation", "AI-লেখা ব্যাখ্যা, সংখ্যা মিলিয়ে যাচাই করা": "AI-written explanation, numbers cross-checked", "নিয়মভিত্তিক ব্যাখ্যা": "Rule-based explanation", "আগের একই হিসাব থেকে": "from an earlier identical calculation", "সূত্র": "Sources", "পৃষ্ঠা": "page", "ফলাফল আরও নির্ভুল করুন": "Make the result more accurate", "মাটির pH": "Soil pH", "pH দিয়ে হালনাগাদ": "Update with pH", "বিশেষজ্ঞ রিভিউ চাই": "Request expert review", "রিভিউয়ের অবস্থা": "Review status", "৩ থেকে ১০ এর মধ্যে pH লিখুন": "Enter a pH between 3 and 10", "বিশেষজ্ঞ রিভিউয়ের জন্য পাঠানো হয়েছে": "Sent for expert review", "বিশেষজ্ঞের যাচাইয়ের অপেক্ষায় আছে": "Waiting for the expert's check", "বিশেষজ্ঞের মত:": "Expert opinion:", "একমত": "Agree", "কিছু বদলানো দরকার": "Needs some changes", "একমত নন": "Disagrees", "এখনো রিভিউয়ের জন্য পাঠানো হয়নি": "Not yet sent for review", "আপনার আগের ফলন (কাটা প্লট)": "Your past yields (harvested plots)", "সেকশন ১-এর পরামর্শে এই ফলন যোগ হয়": "These yields are added to the Section 1 advice", "স্বাস্থ্য ও আর্দ্রতার লেখচিত্র": "Chart of health and moisture", "সবুজ-হলুদ: স্বাস্থ্য": "Green-yellow: health", "পান্না: মাটির আর্দ্রতা": "Emerald: soil moisture", "ছবি পড়া যায়নি": "Could not read the image", "এই ফোন/ব্রাউজারে কণ্ঠস্বর সাপোর্ট নেই": "Voice is not supported on this phone/browser", "দিন": "Day", "বেড়ে উঠছে": "Growing", "কাটার উপযোগী": "Ready to harvest", "কাটা হয়েছে": "Harvested", "মারা গেছে": "Dead", "পাম্প বন্ধ করুন": "Turn pump off", "পাম্প চালু করুন": "Turn pump on", "সেচ দিন": "Irrigate", "ইউরিয়া": "Urea", "টিএসপি": "TSP", "এমওপি": "MoP", "চুন": "Lime", "স্প্রে": "Spray", "কর্তন করুন": "Harvest", "১ দিন": "1 day", "৭ দিন": "7 days", "৩০ দিন": "30 days", "শেষ পর্যন্ত চালান": "Run to the end", "জরুরি সতর্কতায় থামুন": "Stop on urgent alerts", "শতাংশ": "decimal", "স্বাস্থ্য": "Health", "ফলাফল": "Result", "মাটি ও আবহাওয়া": "Soil and weather", "পানি (aw%)": "Water (aw%)", "নাইট্রোজেন": "Nitrogen", "ফসফরাস": "Phosphorus", "পটাশ": "Potassium", "রোগের ঝুঁকি": "Disease risk", "আজ": "Today", "°সে": "°C", "বৃষ্টি": "rain", "মিমি": "mm", "পূর্বাভাস": "Forecast", "সতর্কতা": "Alerts", "কেন?": "Why?", "কোনো সতর্কতা নেই": "No alerts", "টুইন আপনাকে জিজ্ঞেস করছে": "The twin is asking you", "কাজ ও সময়": "Actions and time", "আনুমানিক ফলন": "Estimated yield", "লাভ": "profit", "বাংলা সারাংশ": "Bangla summary", "শুনুন": "Listen", "প্লট মুছুন": "Delete plot", "সেন্সর ও ছবি": "Sensors and photo", "pH স্ট্রিপ বা মাটির সেন্সরের মাপা মান দিলে সিমুলেটেড মানের জায়গায় বসে": "If you enter a measured pH-strip or soil-sensor value, it replaces the simulated value", "ফাঁকা ঘর বাদ যাবে": "Empty boxes are skipped", "মাটির আর্দ্রতা (%)": "Soil moisture (%)", "মাপা মান পাঠান": "Send measured values", "পাতার ছবি": "Leaf photo", "সেটিংস ও ঘটনার তালিকা": "Settings and event list", "স্বয়ংক্রিয় সেচ": "Auto irrigation", "স্বয়ংক্রিয় সার/চুন/স্প্রে": "Auto fertiliser/lime/spray", "জরুরি SMS": "Urgent SMS", "মোবাইল": "Mobile", "বদলাতে নতুন নম্বর": "New number to change", "সেভ করুন": "Save", "সব ঘটনা দেখুন": "Show all events", "অন্তত একটি মান লিখুন": "Enter at least one value", "এই ফসলের জন্য ছবি-মডেল এখনো নেই": "There is no photo model for this crop yet", "প্রশ্নের উত্তর দিয়ে অবস্থা জানান": "Tell us the condition by answering the questions", "মডেল নিশ্চিত নয়, বিশেষজ্ঞের কাছে পাঠানো হয়েছে": "The model is unsure; sent to an expert", "সুস্থ দেখাচ্ছে": "Looks healthy", "সম্ভাব্য রোগ:": "Possible disease:", "নিশ্চয়তা": "confidence", "বিশেষজ্ঞের যাচাই চাওয়া হয়েছে": "expert check requested", "এটি শুধু পরামর্শ": "This is advice only", "কোনো ঘটনা নেই": "No events", "এই প্লট ও তার সব তথ্য মুছে যাবে": "This plot and all its data will be deleted", "নিশ্চিত?": "Sure?", "জমির পরিমাণ লিখুন": "Enter the land area", "তথ্য সঠিক নয়: ইমেইল ও ৮+ অক্ষরের পাসওয়ার্ড (অক্ষর ও সংখ্যা) দিন": "Invalid details: enter an email and a password of 8+ characters (letters and digits)", "সমস্যা হয়েছে, আবার চেষ্টা করুন": "Something went wrong, please try again", "পাসওয়ার্ড অন্তত ৮ অক্ষরের হতে হবে": "Password must be at least 8 characters", "একমত নই": "I disagree", "বদলান": "Adjust", "পরামর্শ রিভিউ তালিকা": "Advice review queue", "নোট (ঐচ্ছিক)": "Note (optional)", "কোনো অপেক্ষমাণ পরামর্শ নেই": "No advice waiting", "অনিশ্চিত পাতার ছবি": "Uncertain leaf photos", "মডেল নিশ্চিত নয়": "Model unsure", "কম নিশ্চয়তা": "low confidence", "রোগ": "Disease", "সুস্থ": "Healthy", "অনিশ্চিত": "Unsure", "কোনো ছবি অপেক্ষায় নেই": "No photos waiting", "ব্যবহারকারী ও ভূমিকা": "Users and roles", "চেয়েছে": "Requested", "ভূমিকা বদলালে ঐ ব্যবহারকারী পরের লগইন বা সেশন নবায়নে নতুন অনুমতি পাবেন": "After a role change, the user gets the new permission at the next login or session refresh"};
+Object.assign(EN,{"কৃষকের ভরসা": "Farmers' Trust", "আপনি যে ফসল ফলাচ্ছেন, একই ফসল অন্যরা ফলালে শেষে কী লাভ-লোকসান হয়েছে, নাম ছাড়া হিসাব দেখুন": "See, anonymously, what profit or loss others ended up with when they grew the same crop you grow", "এতে অ্যাপের পরামর্শ বাস্তব ফলাফলের সাথে মিলিয়ে দেখতে পারবেন": "This lets you check the app's advice against actual outcomes", "ফসল বাছুন": "Pick a crop", "জন কৃষকের ফলাফল": "farmers' results", "জন এখন ফলাচ্ছেন": "growing it now", "সিমুলেশন ফলাফল": "Simulation results", "এই ফলাফল সিমুলেশন থেকে এসেছে, বাস্তব মাঠের যাচাই করা ফলন নয়": "These results come from the simulation, not verified real-field yields", "বাস্তব সেন্সর ও কৃষকের হিসাব যোগ হলে আলাদা চিহ্ন থাকবে": "Real sensor and farmer records will get a separate mark when added", "তুলনা দেখাতে অন্তত": "To show a comparison we need at least", "জন কৃষকের ফলাফল লাগে": "farmers' results", "এখন আছে": "There are now", "শেষ পর্যন্ত কী হলো (প্রতি শতাংশে)": "What happened in the end (per decimal)", "লাভ হয়েছে": "Made a profit", "লোকসান হয়েছে": "Made a loss", "ফসল নষ্ট": "Crop failed", "মধ্যম লাভ": "Median profit", "সেরা ফলাফল": "Best result", "সবচেয়ে খারাপ": "Worst result", "মধ্যম ফলন (কেজি/শতাংশ)": "Median yield (kg/decimal)", "হিসাবের সারণির ফলন (কেজি/শতাংশ)": "Table yield range (kg/decimal)", "প্রতি শতাংশে লাভের বিস্তার": "Spread of profit per decimal", "বাঁ দিকে লোকসান, ডান দিকে লাভ। হলুদ দাগ আপনার ফলাফল": "Loss on the left, profit on the right. The yellow line is your result", "আপনার ফলাফল": "Your result", "প্রতি শতাংশে": "per decimal", "আপনার ফলাফল অন্য কৃষকদের": "Your result beats", "এর চেয়ে ভালো": "of other farmers", "আপনি এখনো এই ফসল কাটেননি": "You have not finished this crop yet", "সেকশন ২-এ প্লট শেষ পর্যন্ত চালালে এখানে তুলনা আসবে": "Run a plot to the end in Section 2 and the comparison appears here"});
+Object.assign(EN,Object.fromEntries(Object.entries({"সেন্টিনেল মনিটর": "Sentinel Monitor", "সেন্সর টেলিমেট্রি": "Sensor telemetry", "ডেমো কনসোল": "Demo console", "সোলারফ্লো AI": "SolarFlow AI","বন্ধ": "Off", "চালু": "On","মাটির আর্দ্রতার গেজ": "Soil moisture gauge", "পাম্প থেকে জমিতে পানির প্রবাহ": "Water flow from the pump to the field","বৃষ্টি মোটামুটি স্বাভাবিক": "Rainfall looks fairly normal", "স্বাভাবিকের চেয়ে কম বৃষ্টির ধারা, সেচ বেশি লাগতে পারে": "Rain trend is below normal, so more irrigation may be needed", "স্বাভাবিকের চেয়ে বেশি বৃষ্টির ধারা, নিকাশ ঠিক রাখুন": "Rain trend is above normal, keep drainage clear","SECTION 2 · সেচ": "SECTION 2 · Irrigation", "সেচ কন্ট্রোল": "Irrigation control", "যেকোনো জায়গা থেকে এক ক্লিকে সেচ, আর ভুলে গেলে সময়মতো অটো সেচ": "Irrigate from anywhere in one click, with auto-irrigation on time if you forget", "এখন আর্দ্রতা সিমুলেটেড; ESP32 জুড়লে আসল মান বসবে": "Moisture is simulated for now; real readings appear once an ESP32 is connected", "সংযোগ হচ্ছে…": "Connecting…", "আগে একটি প্লট তৈরি করুন": "Create a plot first", "সেচ কন্ট্রোল প্লটের ফসল ও মাটির তথ্য দিয়ে কাজ করে": "Irrigation control works from the crop and soil details of a plot", "আর্দ্রতা": "Moisture", "লোড হচ্ছে…": "Loading…", "ডেমো কন্ট্রোল (সিমুলেশন)": "Demo controls (simulation)", "🏜 শুকনো করুন": "🏜 Make dry", "💧 ভেজা করুন": "💧 Make wet", "পাম্প": "Pump", "ট্যাংক": "Tank", "পানি দিন": "Start watering", "থামান": "Stop", "পাম্প থামান": "Stop pump", "কত মিনিট": "How many minutes", "লাইভ আর্দ্রতা": "Live moisture", "সর্বশেষ কয়েক মিনিট": "Last few minutes", "পাম্প চালু ছিল": "Pump was on", "সেচের সীমা": "Irrigation limit", "ভুলে গেলে অটো সেচ": "Auto-irrigation if you forget", "সময়মতো নিজে সেচ দেবে": "Irrigates by itself on time", "শেষ সেচের পর নির্ধারিত সময় গেলে পাম্প নিজে চালু হবে": "The pump starts by itself once the set time passes after the last irrigation", "হাতে সেচ দিলে টাইমার আবার শুরু": "Irrigating by hand restarts the timer", "কত সময় পর পর": "How often", "প্রতিবার কত মিনিট": "Minutes each time", "শুধু মাটি শুকনো থাকলে সেচ দিন (পানি বাঁচবে)": "Irrigate only when the soil is dry (saves water)", "পরের অটো সেচ": "Next auto-irrigation", "সেচের ইতিহাস": "Irrigation history", "০টি": "0 entries", "নিরাপত্তা সীমা": "Safety limits", "গত ২৪ ঘণ্টায় পাম্প চলেছে": "Pump runtime in the last 24 hours", "প্রতিবার সর্বোচ্চ": "Maximum", "মিনিট, তারপর পাম্প নিজে বন্ধ": "minutes, then the pump stops by itself", "মাটি লক্ষ্যমাত্রায় পৌঁছালে পাম্প নিজে থামে": "The pump stops by itself when the soil reaches the target", "জমি অতিরিক্ত ভেজা থাকলে সেচ দেওয়া হয় না": "No irrigation when the field is already too wet", "দুইবারের মাঝে কয়েক সেকেন্ড বিরতি (পাম্প সুরক্ষা)": "A few seconds pause between two runs (pump protection)", "প্লট বাছুন": "Select plot", "সেচের সময়": "Irrigation duration", "আর্দ্রতার লাইভ চার্ট": "Live moisture chart", "অটো সেচ চালু বা বন্ধ": "Turn auto-irrigation on or off", "Language / ভাষা": "Language", "প্লট": "Plot", "আগামী ৭ দিন": "Next 7 days", "আজ তাপ": "Today's temperature", "আনুমানিক লাভ": "Estimated profit", "আজ টুইনের কোনো নতুন প্রশ্ন নেই": "The twin has no new questions today", "আপলোড করা পাতার ছবি": "Uploaded leaf photo", "অন্য ছবি দিতে এখানে চাপুন": "Tap here to upload another photo", "অম্লীয়": "Acidic", "ক্ষারীয়": "Alkaline", "আলো": "Light", "এই হারে প্রায়": "At this rate, about", "দিনে সেচের সীমায় নামবে": "days until it drops to the irrigation limit", "আর্দ্রতা ঠিক আছে": "Moisture is fine", "এইমাত্র": "just now", "সেকেন্ড আগে": "seconds ago", "মিনিট আগে": "minutes ago", "ঘণ্টা আগে": "hours ago", "ঘণ্টা": "hours", "মিনিট": "minutes", "সেকেন্ড": "seconds", "চাই": "Needs", "সহনসীমা": "Tolerance", "সেচ শুরু": "Irrigate below", "% এর নিচে": "%", "লবণাক্ততা": "Salinity", "বেশি": "High", "জরুরি": "Urgent", "মাঝারি": "Medium", "পানি": "Water", "পুষ্টি": "Nutrients", "তাপমাত্রা": "Temperature", "লবণ": "Salt", "বাতাসের আর্দ্রতা": "Humidity", "রোদ": "Sunshine", "পানি উবে যায়": "Evaporation", "৭ দিনে মোট প্রায়": "Over 7 days, about", "মিমি বৃষ্টির সম্ভাবনা": "mm of rain expected", ", সবচেয়ে বেশি": ", most on", "পূর্বাভাস এখন সিমুলেটেড": "The forecast is simulated for now", "আসল আবহাওয়া API যুক্ত হলে বদলে যাবে": "It will change once a real weather API is connected", "প্রতিদিন একটি পাতার ছবি দিন ও টুইনের প্রশ্নের উত্তর দিন, তাহলে পরামর্শ আরও নির্ভুল হবে": "Upload one leaf photo a day and answer the twin's questions to make the advice more precise", "পাতার কাছ থেকে, পরিষ্কার আলোয়": "Close to the leaf, in clear light", "📷 ছবি তুলুন বা বেছে নিন": "📷 Take or choose a photo", "📸 দৈনিক চেক-ইন": "📸 Daily check-in", "⚙️ সেটিংস": "⚙️ Settings", "🌦️ আবহাওয়া": "🌦️ Weather", "🌱 গাছের অবস্থা": "🌱 Plant condition", "🎯 এখন কী করবেন": "🎯 What to do now", "📟 সেন্সরের অবস্থা": "📟 Sensor status", "টুইনের হিসাব থেকে আজকের ধাপ": "Today's steps from the twin's calculations", "সার ও স্প্রের মাত্রা স্থানীয় কৃষি অফিসে যাচাই করুন": "Check fertiliser and spray amounts with your local agriculture office", "সাদা দাগ = এখনকার মান, সবুজ অংশ = ভালো সীমা": "White mark = current value, green area = good range", "সময় এগোলে গাছের চাপের হিসাব আসবে": "Plant stress estimates will appear as time moves on", "১০০% মানে ওই বিষয়ে গাছের কোনো চাপ নেই": "100% means the plant has no stress on that factor", "কম মানই এখন সমস্যার কারণ": "Lower values are the current problem", "মাপা মান নিজে দিন (pH, লবণ, আর্দ্রতা)": "Enter measured values yourself (pH, salt, moisture)", "পর্যায়": "Stage", "📡 কোনো সেন্সর যুক্ত নেই": "📡 No sensor connected", "নিচের মান টুইনের হিসাব (সিমুলেটেড)": "The values below are the twin's estimates (simulated)", "📡 সর্বশেষ সেন্সর:": "📡 Latest sensor:", "মান সন্দেহজনক": "Suspect value", "মান ঠিক": "Value OK", "· মাঠের আর্দ্রতা": "· Field moisture", "ফসলের জীবনচক্র": "Crop life cycle", "⚠ এখন মাত্র": "⚠ Only", "জন কৃষকের ফলাফল আছে": "farmers have results so far", "এটা কোনো প্রবণতা নয়, শুধু কয়েকজনের আসল ফল": "This is not a trend, just the real results of a few people", "লাভ-লোকসান দুটোই যেমন এসেছে তেমন দেখানো হচ্ছে": "Profits and losses are both shown exactly as they came in", "বাঁ দিকে লোকসান, ডান দিকে লাভ": "Loss on the left, profit on the right", "হলুদ দাগ আপনার ফলাফল": "The yellow mark is your result", "অঙ্কুরোদগম": "Germination", "আলু ধরা শুরু": "Tuber initiation", "আলু বড় হওয়া": "Tuber bulking", "কর্তনযোগ্য": "Harvestable", "কুঁড়ি আসা": "Budding", "কুশি": "Tillering", "গাছের বৃদ্ধি": "Plant growth", "চারা তৈরি": "Seedling preparation", "চারা": "Seedling", "থোড়": "Booting", "দানা ভরা": "Grain filling", "দ্রুত বৃদ্ধি": "Rapid growth", "পরিপক্ব": "Mature", "ফল বড় হওয়া": "Fruit enlargement", "ফুল আসা": "Flowering", "ফুল ও ফল ধরা": "Flowering and fruit set", "বীজতলা ও অঙ্কুরোদগম": "Seedbed and germination", "বৃদ্ধি": "Growth", "শুঁটি ভরা": "Pod filling", "রবি": "Rabi", "খরিফ-১": "Kharif-1", "খরিফ-২": "Kharif-2", "দোআঁশ": "Loam", "এঁটেল": "Clay", "বেলে": "Sandy", "আংশিক": "Partial", "নেই (বৃষ্টিনির্ভর)": "None (rain-fed)"}).filter(([k])=>!(k in EN))));
+let ENRE;const reEsc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+function buildRE(){ENRE=new RegExp('(?<![\\u0980-\\u09E5\\u09F0-\\u09FF])(?:'+Object.keys(EN).sort((a,b)=>b.length-a.length).map(reEsc).join('|')+')(?![\\u0980-\\u09E5\\u09F0-\\u09FF])','g')}
+buildRE();
+const DG=s=>s.replace(/[০-৯]/g,c=>'০১২৩৪৫৬৭৮৯'.indexOf(c));
+function trStr(s){if(!/[\u0980-\u09FF]/.test(s))return s;let ch=false;
+ const out=s.split('।').map(p=>{const k=p.trim();if(!k)return p;const e=EN[k];if(e){ch=true;return p.replace(k,()=>e)}
+  if(s.length<=90){const q=p.replace(ENRE,m=>EN[m]);if(q!==p)ch=true;return q}return p});
+ let r=out.join('।');if(ch)r=r.replace(/।/g,'.');return DG(r)}
+const T=s=>LANG==='en'?trStr(s):s;const LB=(b,e)=>LANG==='en'?e:b;
+const OR=new WeakMap(),SKIP=new Set(['SCRIPT','STYLE','PRE','TEXTAREA']),ATT=['placeholder','aria-label','title','alt'];
+function trText(n){if(SKIP.has(n.parentNode?.nodeName))return;const v=n.nodeValue,r=OR.get(n);if(r&&r.t===v)return;const x=trStr(v);if(x!==v){OR.set(n,{o:v,t:x});n.nodeValue=x}}
+function trEl(el){for(const a of ATT){const v=el.getAttribute(a);if(!v)continue;const k='data-bn-'+a,o=el.getAttribute(k);if(o!==null&&trStr(o)===v)continue;const x=trStr(v);if(x!==v){el.setAttribute(k,v);el.setAttribute(a,x)}}}
+function trTree(r){if(r.nodeType===3)return trText(r);if(r.nodeType!==1)return;const w=document.createTreeWalker(r,5);let n=r;do{n.nodeType===3?trText(n):trEl(n)}while(n=w.nextNode())}
+function untr(){const w=document.createTreeWalker(document.body,5);let n;while(n=w.nextNode()){if(n.nodeType===3){const r=OR.get(n);if(r&&r.t===n.nodeValue)n.nodeValue=r.o;OR.delete(n)}else for(const a of ATT){const k='data-bn-'+a;if(n.hasAttribute(k)){n.setAttribute(a,n.getAttribute(k));n.removeAttribute(k)}}}}
+const MO=new MutationObserver(ms=>{if(LANG!=='en')return;MO.disconnect();for(const m of ms){if(m.type==='characterData')trText(m.target);else m.addedNodes.forEach(trTree)}arm()});
+const arm=()=>MO.observe(document.body,{childList:true,subtree:true,characterData:true});
+function rebuildHero(){document.querySelectorAll('.slide').forEach((el,i)=>el.innerHTML=slideInner(S[i]));if(cur>=0)$('#loc').textContent=locOf(S[cur])}
+function setLang(l,first){LANG=l;store.set('gt_lang',l);document.documentElement.lang=l;document.dispatchEvent(new CustomEvent('gt-lang',{detail:l}));MO.disconnect();if(l==='en')trTree(document.body);else untr();arm();
+ $('#lg').textContent=l==='en'?'বাং':'EN';rebuildHero();
+ if(!first){if(P)draw();if(lastRep)renderRep(lastRep,true);if(meta)loadHarvests();if(curV==='x'&&ME)loadX();if(lastTrust&&curV==='s4')drawTrust()}}
+function setTheme(m){document.documentElement.dataset.theme=m;store.set('gt_theme',m);$('#th').innerHTML=`<svg class="ic"><use href="#${m==='light'?'i-moon':'i-sun'}"/></svg>`}
+$('#lg').onclick=()=>setLang(LANG==='en'?'bn':'en');
+$('#th').onclick=()=>setTheme(document.documentElement.dataset.theme==='light'?'dark':'light');
+setTheme(document.documentElement.dataset.theme==='light'?'light':'dark');
+
+
+/* SECTION 4: farmers' trust */
+let lastTrust=null,trCrop=null;
+async function loadTrust(){if(!meta)return;
+ if(!trCrop)trCrop=(P&&P.crop.id)||plots[0]?.crop?.id||meta.crops[0].id;
+ $('#tc').innerHTML=meta.crops.map(c=>`<button class="chip" aria-pressed="${c.id===trCrop}" data-c="${esc(c.id)}">${esc(c.name_bn)}</button>`).join('');
+ $('#tc').querySelectorAll('.chip').forEach(b=>b.onclick=()=>{trCrop=b.dataset.c;guard('#e4',loadTrust)});
+ lastTrust=await api('/trust/crop/'+encodeURIComponent(trCrop));drawTrust()}
+function hist(h,mine){const W=300,H=90,n=h.counts.length,mx=Math.max(...h.counts,1),bw=W/n,w=(h.hi-h.lo)/n||1;
+ const bars=h.counts.map((c,i)=>{const hh=c/mx*(H-14),mid=h.lo+(i+.5)*w;return`<rect x="${i*bw+2}" y="${H-hh}" width="${bw-4}" height="${hh}" rx="3" style="fill:var(${mid<0?'--bad':'--lime'});opacity:.85"/>`}).join('');
+ const zero=h.lo<0&&h.hi>0?`<line x1="${-h.lo/(h.hi-h.lo)*W}" x2="${-h.lo/(h.hi-h.lo)*W}" y1="0" y2="${H}" stroke="currentColor" stroke-dasharray="3 3" opacity=".5"/>`:'';
+ const me=mine.map(m=>{const x=Math.min(W,Math.max(0,(m.profit_per_decimal-h.lo)/((h.hi-h.lo)||1)*W));return`<line x1="${x}" x2="${x}" y1="0" y2="${H}" style="stroke:var(--warn)" stroke-width="3"/>`}).join('');
+ return`<svg viewBox="0 0 ${W} ${H}" class="spark" style="height:110px" preserveAspectRatio="none" role="img" aria-label="প্রতি শতাংশে লাভের বিস্তার">${bars}${zero}${me}</svg><div class="row" style="justify-content:space-between"><span class="muted">${money(h.lo)}</span><span class="muted">${money(h.hi)}</span></div>`}
+function drawTrust(){const d=lastTrust;if(!d)return;const nm=meta.crops.find(c=>c.id===d.crop_id)?.name_bn||d.crop_id;
+ let h=`<div class="card pop"><h3 style="font-size:24px">${esc(nm)}</h3><div class="grid"><div class="mini"><div class="v">${bn.format(d.n_farmers)}</div><div class="muted">জন কৃষকের ফলাফল</div></div><div class="mini"><div class="v">${bn.format(d.growing_now)}</div><div class="muted">জন এখন ফলাচ্ছেন</div></div></div>
+ <p class="muted" style="margin-bottom:0"><span class="badge b-warn">সিমুলেশন ফলাফল</span> এই ফলাফল সিমুলেশন থেকে এসেছে, বাস্তব মাঠের যাচাই করা ফলন নয়। বাস্তব সেন্সর ও কৃষকের হিসাব যোগ হলে আলাদা চিহ্ন থাকবে।</p></div>`;
+ if(!d.enough){h+=`<div class="card pop"><p style="margin:0">তুলনা দেখাতে অন্তত <b>${bn.format(d.min_farmers)}</b> জন কৃষকের ফলাফল লাগে। এখন আছে <b>${bn.format(d.n_farmers)}</b>।</p></div>`}
+ else{const pc=Math.round(d.profit_share*100);
+  if(d.n_farmers<5)h+=`<div class="card pop" style="border-left:4px solid var(--warn)"><p style="margin:0">⚠ এখন মাত্র <b>${bn.format(d.n_farmers)}</b> জন কৃষকের ফলাফল আছে। এটা কোনো প্রবণতা নয়, শুধু কয়েকজনের আসল ফল। লাভ-লোকসান দুটোই যেমন এসেছে তেমন দেখানো হচ্ছে।</p></div>`;
+  h+=`<div class="card pop"><h3>শেষ পর্যন্ত কী হলো (প্রতি শতাংশে)</h3><div class="grid">
+  <div class="mini"><div class="v pos">${bn.format(pc)}%</div><div class="muted">লাভ হয়েছে</div></div>
+  <div class="mini"><div class="v neg">${bn.format(100-pc)}%</div><div class="muted">লোকসান হয়েছে</div></div>
+  <div class="mini"><div class="v">${bn.format(d.failed)}</div><div class="muted">ফসল নষ্ট</div></div>
+  <div class="mini"><div>${signed(d.median_profit_per_decimal)}</div><div class="muted">মধ্যম লাভ</div></div>
+  <div class="mini"><div>${signed(d.best)}</div><div class="muted">সেরা ফলাফল</div></div>
+  <div class="mini"><div>${signed(d.worst)}</div><div class="muted">সবচেয়ে খারাপ</div></div>
+  ${d.median_yield_per_decimal!=null?`<div class="mini"><div class="v">${bn.format(d.median_yield_per_decimal)}</div><div class="muted">মধ্যম ফলন (কেজি/শতাংশ)</div></div>`:''}
+  <div class="mini"><div class="v">${bn.format(d.table.bad)}–${bn.format(d.table.good)}</div><div class="muted">হিসাবের সারণির ফলন (কেজি/শতাংশ)</div></div></div></div>
+  <div class="card pop"><h3>প্রতি শতাংশে লাভের বিস্তার</h3>${hist(d.hist,d.mine)}<p class="muted" style="margin-bottom:0">বাঁ দিকে লোকসান, ডান দিকে লাভ। হলুদ দাগ আপনার ফলাফল।</p></div>`}
+ h+=`<div class="card pop"><h3>আপনার ফলাফল</h3>`+(d.mine.length?d.mine.map(m=>`<div class="mini" style="margin:8px 0"><strong>${m.outcome==='dead'?'মারা গেছে':'কাটা হয়েছে'}</strong> · ${esc(m.start_date||'')}<br>${signed(m.profit_per_decimal)} প্রতি শতাংশে${m.outcome==='dead'?'':` · ${bn.format(m.yield_per_decimal)} কেজি/শতাংশ`}${m.better_than!=null?`<br>আপনার ফলাফল অন্য কৃষকদের <b>${bn.format(Math.round(m.better_than*100))}%</b> এর চেয়ে ভালো।`:''}</div>`).join(''):`<p class="muted" style="margin:0">আপনি এখনো এই ফসল কাটেননি। সেকশন ২-এ প্লট শেষ পর্যন্ত চালালে এখানে তুলনা আসবে।</p>`)+`</div>`;
+ $('#tr').innerHTML=h}
+
+/* EXPERT / ADMIN */
+const VERD={agree:'একমত',adjust:'বদলান',disagree:'একমত নই'};
+async function loadX(){err('#eX','');
+ try{const q=await api('/expert/queue');$('#xq').innerHTML='<h3>পরামর্শ রিভিউ তালিকা</h3>'+(q.length?q.map(r=>`<div class="mini" style="margin:10px 0"><strong>${esc(r.headline_bn)}</strong><div class="muted">নির্ভরযোগ্যতা ${bn.format(Math.round(r.confidence*100))}% · ${esc(Object.values(r.inputs||{}).map(i=>i.label_bn+': '+i.display_bn).join(' · '))}</div><textarea rows="2" id="n-${esc(r.session_id)}" placeholder="নোট (ঐচ্ছিক)" style="margin-top:8px"></textarea><div class="rbtn">${Object.keys(VERD).map(v=>`<button data-rs="${esc(r.session_id)}" data-v="${v}">${VERD[v]}</button>`).join('')}</div></div>`).join(''):'<p class="muted">কোনো অপেক্ষমাণ পরামর্শ নেই।</p>');
+  const pr=await api('/twin/expert/reviews');$('#xp').innerHTML='<h3>অনিশ্চিত পাতার ছবি</h3>'+(pr.length?pr.map(r=>`<div class="mini" style="margin:10px 0"><strong>${esc(r.crop)}</strong> · দিন ${bn.format(r.day)} · ${esc(r.reason==='unknown'?'মডেল নিশ্চিত নয়':'কম নিশ্চয়তা')}${r.label?' · '+esc(r.label)+' ('+bn.format(Math.round((r.score||0)*100))+'%)':''}<div class="rbtn">${[['disease','রোগ'],['healthy','সুস্থ'],['unsure','অনিশ্চিত']].map(([v,l])=>`<button data-pp="${esc(r.plot_id)}" data-pr="${esc(r.review_id)}" data-v="${v}">${l}</button>`).join('')}</div></div>`).join(''):'<p class="muted">কোনো ছবি অপেক্ষায় নেই।</p>');
+  document.querySelectorAll('[data-rs]').forEach(b=>b.onclick=()=>guard('#eX',async()=>{await post(`/expert/review/${encodeURIComponent(b.dataset.rs)}`,{verdict:b.dataset.v,note:$('#n-'+b.dataset.rs).value});await loadX()}));
+  document.querySelectorAll('[data-pp]').forEach(b=>b.onclick=()=>guard('#eX',async()=>{await post(`/twin/expert/reviews/${b.dataset.pp}/${b.dataset.pr}`,{verdict:b.dataset.v});await loadX()}))}catch(e){return err('#eX',e.message)}
+ if(ME?.role==='admin'){try{const us=await api('/admin/users');$('#xu').innerHTML='<h3>ব্যবহারকারী ও ভূমিকা</h3><div class="scroll"><table><thead><tr><th>নাম</th><th>ইমেইল</th><th>চেয়েছে</th><th>ভূমিকা</th></tr></thead><tbody>'+us.map(u=>`<tr><td>${esc(u.full_name)}</td><td>${esc(u.email)}</td><td>${esc(ROLE_BN[u.role_request]||'')}</td><td><select data-u="${esc(u.id)}" style="min-height:36px;padding:4px 8px">${['farmer','expert','admin'].map(r=>`<option value="${r}" ${u.role===r?'selected':''}>${ROLE_BN[r]}</option>`).join('')}</select></td></tr>`).join('')+'</tbody></table></div><p class="muted" style="margin-bottom:0">ভূমিকা বদলালে ঐ ব্যবহারকারী পরের লগইন বা সেশন নবায়নে নতুন অনুমতি পাবেন।</p>';
+   $('#xu').querySelectorAll('[data-u]').forEach(s=>s.onchange=()=>guard('#eX',async()=>{await post(`/admin/users/${s.dataset.u}/role`,{role:s.value})}))}catch(e){$('#xu').innerHTML='<h3>ব্যবহারকারী ও ভূমিকা</h3><p class="muted">'+esc(e.message)+'</p>'}}}
+setLang(LANG,true);
+boot();
+
+/* SCROLL */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.15});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+const views=['top','sentinel-monitor','s1','s2','irrigation','s3','s4','x'];let curV=null;
+function show(id,instant){if(!views.includes(id)||id===curV)return;
+ const swap=()=>{views.forEach(v=>$('#'+v).classList.toggle('active',v===id));
+  document.querySelectorAll('#side a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+id));
+  window.scrollTo(0,0);curV=id;document.dispatchEvent(new CustomEvent('gt-view',{detail:id}));if(id==='x'&&ME)loadX();if(id==='s4'&&ME)guard('#e4',loadTrust);try{history.replaceState(null,'','#'+id)}catch(_){}
+  document.querySelectorAll('#'+id+' .rv').forEach((el,i)=>{el.style.transitionDelay=i*.08+'s';setTimeout(()=>el.classList.add('in'),30)})};
+ if(instant||reduce||curV===null){swap();return}
+ const w=$('#wipe');w.classList.remove('go');void w.offsetWidth;w.classList.add('go');setTimeout(swap,330)}
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a)return;const id=a.getAttribute('href').slice(1);if(views.includes(id)){e.preventDefault();show(id)}});
+addEventListener('hashchange',()=>show(location.hash.slice(1)));
+show(views.includes(location.hash.slice(1))?location.hash.slice(1):'top',true);
+
+/* v2 FX */
+(()=>{
+ const fine=matchMedia('(pointer:fine)').matches;let rows='';
+ for(let i=-14;i<=14;i++)rows+=`<line x1="${800+i*26}" y1="610" x2="${800+i*190}" y2="900"/>`;
+ $('#land').innerHTML=`<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><defs><radialGradient id="sg"><stop offset="0" stop-color="#fff8c0"/><stop offset=".25" stop-color="#d8ff5a" stop-opacity=".85"/><stop offset="1" stop-color="#a3f20a" stop-opacity="0"/></radialGradient><linearGradient id="sk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#06140c"/><stop offset=".7" stop-color="#14442a"/><stop offset="1" stop-color="#2d6a22"/></linearGradient><linearGradient id="fd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f8a1f"/><stop offset="1" stop-color="#0f3a14"/></linearGradient></defs><rect width="1600" height="900" fill="url(#sk)"/><circle class="sun" cx="1150" cy="330" r="260" fill="url(#sg)"/><g id="l1"><path d="M0 560Q200 470 420 540T820 520T1240 530T1600 500V900H0z" fill="#1d4a22" opacity=".9"/></g><g id="l2"><path d="M0 620Q260 540 520 600T1000 590T1600 580V900H0z" fill="#235f20"/></g><g id="l3"><path d="M0 610H1600V900H0z" fill="url(#fd)"/><g class="rows" stroke="#b8ff3a" stroke-opacity=".35" stroke-width="2">${rows}</g></g></svg>`;
+ const im=new Image();im.onload=()=>hero.classList.add('has-photo');im.src='img/field-1.jpg';
+ // fireflies
+ const cv=$('#pt'),cx=cv.getContext('2d');let W,H;const ps=[];
+ const rs=()=>{W=cv.width=innerWidth;H=cv.height=innerHeight};rs();addEventListener('resize',rs);
+ for(let i=0;i<70;i++)ps.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*2+.6,v:Math.random()*.4+.15,p:Math.random()*6});
+ if(!reduce)(function f(t){cx.clearRect(0,0,W,H);cx.shadowColor='#a3f20a';cx.shadowBlur=12;for(const q of ps){q.y-=q.v;q.x+=Math.sin(t/1500+q.p)*.3;if(q.y<-10){q.y=H+10;q.x=Math.random()*W}cx.beginPath();cx.fillStyle=`rgba(190,255,80,${.35+.35*Math.sin(t/600+q.p)})`;cx.arc(q.x,q.y,q.r,0,7);cx.fill()}requestAnimationFrame(f)})(0);
+ if(fine&&!reduce){
+  addEventListener('mousemove',e=>{$('#spot').style.transform=`translate(${e.clientX-250}px,${e.clientY-250}px)`;
+   const x=e.clientX/innerWidth-.5,y=e.clientY/innerHeight-.5;$('#l1').style.translate=`${x*-14}px ${y*-6}px`;$('#l2').style.translate=`${x*-30}px ${y*-12}px`;$('#l3').style.translate=`${x*-55}px ${y*-18}px`;
+   const b=e.target.closest?.('button.p');if(b){const r=b.getBoundingClientRect();b.style.translate=`${(e.clientX-r.left-r.width/2)*.15}px ${(e.clientY-r.top-r.height/2)*.25}px`}
+   const c=e.target.closest?.('.card');if(c&&!c.querySelector('input:focus,textarea:focus,select:focus')){const r=c.getBoundingClientRect(),cx2=(e.clientX-r.left)/r.width-.5,cy2=(e.clientY-r.top)/r.height-.5;c.style.transition='transform .12s';c.style.transform=`perspective(900px) rotateX(${cy2*-4}deg) rotateY(${cx2*5}deg)`}});
+  document.addEventListener('mouseout',e=>{const b=e.target.closest?.('button.p');if(b)b.style.translate='';const c=e.target.closest?.('.card');if(c&&!c.contains(e.relatedTarget)){c.style.transition='transform .6s';c.style.transform=''}});
+ }
+ if(!reduce)addEventListener('scroll',()=>{const y=scrollY;if(y>innerHeight*1.2)return;$('#l1').style.transform=`translateY(${y*.12}px)`;$('#l2').style.transform=`translateY(${y*.25}px)`;$('#l3').style.transform=`translateY(${y*.4}px)`;document.querySelectorAll('.slide.on .wrap').forEach(w=>{w.style.transform=`translateY(${y*.3}px)`;w.style.opacity=Math.max(0,1-y/(innerHeight*.8))})},{passive:true});
+/* ===== সেচ কন্ট্রোল module (lives in the main closure: reuses authHeaders, refresh, logout, store, esc, ME, CFG, LANG) ===== */
+(()=>{
+const q=id=>document.getElementById(id),cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+const nf=(n,d=0)=>{const x=Number(n);return isFinite(x)?new Intl.NumberFormat(LANG==='en'?'en-US':'bn-BD',{minimumFractionDigits:d,maximumFractionDigits:d}).format(x):'—'};
+const p2=n=>(n<10?nf(0):'')+nf(n),hms=s=>{s=Math.max(0,Math.round(s));const h=Math.floor(s/3600),m=Math.floor(s%3600/60);return(h?nf(h)+':':'')+p2(m)+':'+p2(s%60)};
+const ago=s=>s==null?'':s<5?LB('এইমাত্র','just now'):s<60?nf(s)+LB(' সেকেন্ড আগে',' s ago'):s<3600?nf(Math.round(s/60))+LB(' মিনিট আগে',' min ago'):nf(Math.round(s/3600))+LB(' ঘণ্টা আগে',' h ago');
+const MINS=[2,5,10,15,30],DURS=[1,3,5,10,15,20];const EVERY_L=()=>[[2,LB('২ মিনিট · ডেমো','2 min · demo')],[30,LB('৩০ মিনিট','30 min')],[60,LB('১ ঘণ্টা','1 hour')],[360,LB('৬ ঘণ্টা','6 hours')],[720,LB('১২ ঘণ্টা','12 hours')],[1440,LB('১ দিন','1 day')],[2880,LB('২ দিন','2 days')]];
+const REASON={get completed(){return LB('সময় শেষ','Time ended')},get manual(){return LB('হাতে বন্ধ','Stopped by hand')},get target_reached(){return LB('লক্ষ্যে পৌঁছেছে','Target reached')}};
+const VMAX=130,CX=160,R=140,RING=552.9;
+let pid=store.get('gt_pump_plot'),S=null,off=0,timer=0,active=false,fail=0,busyI=false,minutes=+store.get('gt_pump_min')||5,draft={every:1440,min:10,dry:true},dirty=false,saveT=0,ask=null,changed=false,zk='';
+
+async function iapi(path,o={},retry=true){
+ let r;try{r=await fetch(path,{...o,headers:{'Content-Type':'application/json',...authHeaders()}})}catch(_){throw new Error(LB('সার্ভারের সাথে যোগাযোগ করা যাচ্ছে না। ইন্টারনেট বা সার্ভার চালু আছে কি না দেখুন।','Cannot reach the server. Check your internet connection or whether the server is running.'))}
+ if(r.status===401&&CFG.auth_required){if(retry&&await refresh())return iapi(path,o,false);logout(true);throw new Error(LB('সেশন শেষ, আবার লগইন করুন।','Session ended, please log in again.'))}
+ let j={};try{j=await r.json()}catch(_){}
+ if(!r.ok){const d=j&&j.detail,e=new Error(typeof d==='string'?d:(d&&d.message_bn)||LB('সমস্যা হয়েছে, আবার চেষ্টা করুন।','Something went wrong, please try again.'));e.status=r.status;e.code=d&&d.code;throw e}
+ return j}
+const ipost=(p,b)=>iapi(p,{method:'POST',body:JSON.stringify(b||{})}),base=()=>'/twin/plots/'+encodeURIComponent(pid)+'/irrigation';
+function say(m,bad){const t=q('i-toast');t.textContent=m;t.className='show'+(bad?' bad':'');clearTimeout(say.h);say.h=setTimeout(()=>{t.className=''},3600)}
+function live(ok,txt){const e=q('i-live');e.textContent=txt;e.className='i-b '+(ok?'ok':'bad')}
+
+/* geometry */
+const ang=v=>135+270*cl(v/VMAX,0,1),pt=(a,r)=>{const t=a*Math.PI/180;return[CX+r*Math.cos(t),CX+r*Math.sin(t)]};
+const arc=(a,b,r)=>{const p=pt(ang(a),r),s=pt(ang(b),r);return`M${p[0].toFixed(1)} ${p[1].toFixed(1)} A${r} ${r} 0 ${ang(b)-ang(a)>180?1:0} 1 ${s[0].toFixed(1)} ${s[1].toFixed(1)}`};
+{let d='M0 9',x=0;while(x<640){d+=' q30 -18 60 0 t60 0';x+=120}q('i-w').setAttribute('d',d+' V300 H0Z')}
+
+/* plots */
+async function plotsInit(){
+ const l=await iapi('/twin/plots'),a=(l||[]).filter(p=>p.status==='growing'||p.status==='ready'),sel=q('i-plots');
+ sel.innerHTML=a.map(p=>`<option value="${esc(p.id)}">${esc((p.name||LB('প্লট','Plot'))+' · '+(p.crop&&p.crop.name_bn||''))}</option>`).join('');
+ q('i-grid').classList.toggle('hidden',!a.length);q('i-empty').classList.toggle('hidden',!!a.length);sel.classList.toggle('hidden',!a.length);
+ if(!a.length)return false;
+ const pref=(typeof P!=='undefined'&&P&&P.id)||pid;pid=a.some(p=>p.id===pref)?pref:a[0].id;sel.value=pid;store.set('gt_pump_plot',pid);return true}
+q('i-plots').onchange=function(){pid=this.value;store.set('gt_pump_plot',pid);S=null;dirty=false;zk='';poll()};
+
+/* polling lifecycle */
+async function poll(){clearTimeout(timer);if(!active||!pid)return;
+ try{apply(await iapi(base()));fail=0;err('#eIrr','')}catch(e){fail++;live(false,LB('সংযোগ নেই…','No connection…'));if(e.status===404){try{if(await plotsInit()){poll();return}}catch(_){}}else err('#eIrr',e.message)}
+ if(active)timer=setTimeout(poll,document.hidden?15000:fail?6000:2500)}
+async function on(){active=true;clearTimeout(timer);if(!ME){timer=setTimeout(on,800);return}
+ try{if(await plotsInit())poll()}catch(e){err('#eIrr',e.message)}}
+function off_(){active=false;clearTimeout(timer)}
+document.addEventListener('gt-view',e=>{if(e.detail==='irrigation')on();else{off_();if(e.detail==='s2'&&changed){changed=false;try{loadPlots()}catch(_){}}}});
+document.addEventListener('visibilitychange',()=>{if(active&&!document.hidden)poll()});
+
+function apply(st){S=st;off=Date.parse(st.server_time)-Date.now();live(true,st.mode==='sim'?LB('সিমুলেশন চলছে','Simulation running'):LB('লাইভ','Live'));
+ if(st.device&&st.device.required&&!st.device.online)err('#eIrr',LB('পাম্প ডিভাইস অফলাইন। কমান্ড পৌঁছাবে না।','Pump device is offline. Commands will not arrive.'));
+ gauge(st);pump(st);sched(st);safety(st);hist(st);chart();clock()}
+
+/* gauge */
+function gauge(st){const th=st.thresholds,m=st.moisture,k=JSON.stringify(th);
+ if(k!==zk){zk=k;const g=q('i-zones');g.innerHTML='';[[0,th.emergency_below,'#f19a92'],[th.emergency_below,th.irrigate_below,'#f0c46a'],[th.irrigate_below,th.stop_at,'#3de0a0'],[th.stop_at,VMAX,'#a3f20a']].forEach(z=>{const p=document.createElementNS('http://www.w3.org/2000/svg','path');p.setAttribute('d',arc(z[0],z[1],R));p.setAttribute('stroke',z[2]);p.setAttribute('opacity','.3');g.appendChild(p)});
+  q('i-leg').innerHTML=[[LB('জরুরি < ','Urgent < ')+nf(th.emergency_below)+'%','#f19a92'],[LB('সেচ < ','Irrigate < ')+nf(th.irrigate_below)+'%','#f0c46a'],[LB('লক্ষ্য ','Target ')+nf(th.stop_at)+'%','#a3f20a']].map(x=>`<span style="--c:${x[1]}">${x[0]}</span>`).join('')}
+ const sim=st.mode==='sim',b=q('i-srcb');b.textContent=sim?LB('সিমুলেটেড','Simulated'):LB('ESP32 লাইভ','ESP32 live');b.className='i-b '+(sim?'warn':'ok');q('i-demo').classList.toggle('hidden',!sim);
+ const s=q('i-stt');if(!m){s.textContent=LB('সেন্সরের ডেটা এখনো আসেনি','No sensor data yet');return}
+ const v=m.value;let t,c,a,z;
+ if(v<th.emergency_below){t=LB('জরুরি: মাটি খুব শুকনো','Urgent: soil is very dry');c='#f19a92';a='#f19a92';z='#7a2b25'}else if(v<th.irrigate_below){t=LB('শুকনো: সেচ দরকার','Dry: needs irrigation');c='#f0c46a';a='#f0c46a';z='#7a5513'}else if(v<th.stop_at){t=LB('আর্দ্রতা ঠিক আছে','Moisture is fine');c='#3de0a0';a='#3de0a0';z='#0d5b4b'}else if(v<th.stop_at+15){t=LB('পর্যাপ্ত ভেজা','Well watered');c='#a3f20a';a='#a3f20a';z='#4a7a0a'}else{t=LB('অতিরিক্ত পানি','Too much water');c='#59d0ff';a='#59d0ff';z='#14506b'}
+ s.textContent=t;s.style.color=c;q('il1').setAttribute('stop-color',a);q('il2').setAttribute('stop-color',z);
+ q('i-liq').style.transform=`translateY(${(268-cl(v/VMAX,0,1)*216).toFixed(1)}px)`;q('i-prog').setAttribute('d',v>.5?arc(0,cl(v,.5,VMAX),R):'');q('i-gn').firstChild.nodeValue=nf(v);
+ q('i-trust').textContent=LB('সেন্সর: ','Sensor: ')+(m.source==='sensor'?'ESP32':LB('সিমুলেটেড','Simulated'))+(m.age_s?' · '+ago(m.age_s):'')}
+
+/* pump */
+const DROP='<path d="M12 2.7s6.5 6.6 6.5 11.3a6.5 6.5 0 0 1-13 0C5.5 9.3 12 2.7 12 2.7z"/><path d="M9 14.5a3 3 0 0 0 3 3"/>',STOP='<rect x="6" y="6" width="12" height="12" rx="2.5" fill="currentColor"/>';
+function pump(st){const p=st.pump,on=!!p.on;q('i-pipe').classList.toggle('i-on',on);
+ const c=q('i-pc');c.textContent=on?LB('চালু','On'):LB('বন্ধ','Off');c.className='i-b'+(on?' on':'');
+ const g=q('i-go');g.classList.toggle('stop',on);g.setAttribute('aria-label',on?LB('পাম্প থামান','Stop pump'):LB('পানি দিন','Start watering'));g.disabled=busyI;q('i-gt').textContent=on?LB('থামান','Stop'):LB('পানি দিন','Start watering');q('i-goic').innerHTML=on?STOP:DROP;
+ const box=q('i-mins');box.innerHTML='';MINS.filter(m=>m<=st.limits.max_minutes).forEach(m=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=nf(m);b.setAttribute('aria-pressed',String(m===minutes));b.disabled=on;b.onclick=()=>{minutes=m;store.set('gt_pump_min',String(m));pump(S)};box.appendChild(b)});
+ const h=q('i-hint');
+ if(ask){h.innerHTML=`<span>${esc(ask)}${LB('। তবুও সেচ দেবেন?','. Irrigate anyway?')}</span>`;const y=document.createElement('button'),n=document.createElement('button');y.type=n.type='button';y.className='p';y.textContent=LB('হ্যাঁ, দিন','Yes, irrigate');n.textContent=LB('না','No');y.onclick=async()=>{ask=null;await act(()=>start(true))};n.onclick=()=>{ask=null;pump(S)};h.append(y,n)}
+ else h.textContent=on?LB('চলছে · ','Running · ')+({manual:LB('হাতে চালু','Started by hand'),schedule:LB('টাইমারে চালু','Started by timer')}[p.source]||'')+LB('। লক্ষ্যে পৌঁছালে নিজে বন্ধ হবে।','. It stops by itself when the target is reached.'):LB(`ক্লিক করলে ${nf(minutes)} মিনিট পানি দেবে। লক্ষ্যে পৌঁছালে আগেই বন্ধ হবে।`,`Tapping waters for ${nf(minutes)} min. It stops earlier if the target is reached.`)}
+const nowMs=()=>Date.now()+off;
+function clock(){if(!S)return;const p=S.pump;
+ if(p.on){const left=Math.max(0,(Date.parse(p.ends_at)-nowMs())/1000);q('i-gtm').textContent=hms(left);q('i-ring').style.strokeDashoffset=(RING*(1-cl(left/(p.minutes*60),0,1))).toFixed(1);q('i-ring').style.opacity=1}
+ else{q('i-gtm').textContent='';q('i-ring').style.opacity=0;q('i-ring').style.strokeDashoffset=RING}
+ const sc=S.schedule,d=q('i-due');if(!sc.enabled)d.textContent='—';else if(p.on)d.textContent=LB('চলছে','Running');else if(sc.next_due_at){const l=(Date.parse(sc.next_due_at)-nowMs())/1000;d.textContent=l>0?hms(l):LB('এখনই','Now')}}
+setInterval(()=>{if(active)clock()},300);
+async function start(force){try{await ipost(base()+'/start',{minutes,force});say(LB('পাম্প চালু হয়েছে · '+nf(minutes)+' মিনিট','Pump started · '+nf(minutes)+' min'));changed=true}catch(e){if(e.code==='already_wet'&&!force){ask=e.message;return}throw e}}
+async function act(fn){if(busyI)return;busyI=true;q('i-go').disabled=true;try{await fn()}catch(e){say(e.message,1)}busyI=false;await poll()}
+q('i-go').onclick=()=>{if(!S)return;ask=null;act(async()=>{if(S.pump.on){await ipost(base()+'/stop');changed=true}else await start(false)})};
+
+/* schedule */
+function chipRow(host,items,sel,pick,dis){host.innerHTML='';items.forEach(([v,l])=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=l;b.setAttribute('aria-pressed',String(v===sel));b.disabled=!!(dis&&dis(v));b.onclick=()=>pick(v);host.appendChild(b)})}
+function drawChips(){const list=EVERY_L();if(!list.some(e=>e[0]===draft.every))list.push([draft.every,nf(draft.every)+LB(' মিনিট',' min')]);
+ chipRow(q('i-ev'),list,draft.every,v=>{draft.every=v;if(draft.min>=v)draft.min=1;chg()});
+ chipRow(q('i-du'),DURS.filter(d=>d<=(S?S.limits.max_minutes:30)).map(d=>[d,nf(d)]),draft.min,v=>{draft.min=v;chg()},v=>v>=draft.every);q('i-dryonly').checked=draft.dry}
+function chg(){dirty=true;drawChips();clearTimeout(saveT);saveT=setTimeout(()=>save(S&&S.schedule.enabled),500)}
+async function save(en){if(!pid)return;try{const st=await ipost(base()+'/schedule',{enabled:!!en,every_minutes:draft.every,minutes:draft.min,only_if_dry:draft.dry});dirty=false;apply(st);say(en?LB('অটো সেচ চালু হয়েছে','Auto-irrigation is on'):LB('সেটিং সংরক্ষিত','Setting saved'))}catch(e){dirty=false;say(e.message,1);poll()}}
+q('i-son').onclick=()=>{if(!S)return;clearTimeout(saveT);save(!S.schedule.enabled)};q('i-dryonly').onchange=function(){draft.dry=this.checked;chg()};
+function sched(st){const s=st.schedule;if(!dirty)draft={every:s.every_minutes,min:s.minutes,dry:s.only_if_dry!==false};drawChips();
+ q('i-son').setAttribute('aria-checked',String(!!s.enabled));const c=q('i-sch');c.textContent=s.enabled?LB('চালু','On'):LB('বন্ধ','Off');c.className='i-b'+(s.enabled?' ok':'');
+ q('i-skip').textContent=s.enabled?(s.last_skip?LB('সর্বশেষ যাচাই: ','Last check: ')+s.last_skip.text_bn+' · '+ago(Math.round((nowMs()-Date.parse(s.last_skip.at))/1000)):LB('সময় হলে মাটি ও নিরাপত্তা সীমা দেখে সেচ শুরু হবে।','At the set time it checks the soil and safety limits, then irrigates.')):LB('চালু করলে আপনি ভুলে গেলেও সেচ বাদ যাবে না।','Turn it on and irrigation will not be missed even if you forget.')}
+
+/* safety + history */
+function safety(st){const l=st.limits,pc=cl(l.used_24h_min/l.daily_cap_min*100,0,100);q('i-ub').firstElementChild.style.width=pc.toFixed(0)+'%';q('i-ub').classList.toggle('hot',pc>=80);
+ q('i-ut').textContent=LB(`${nf(l.used_24h_min,1)} / ${nf(l.daily_cap_min)} মিনিট ব্যবহৃত · আরও ${nf(l.left_24h_min,1)} মিনিট দেওয়া যাবে`,`${nf(l.used_24h_min,1)} / ${nf(l.daily_cap_min)} min used · ${nf(l.left_24h_min,1)} more min allowed`);q('i-rmax').textContent=nf(l.max_minutes)}
+function hist(st){const u=q('i-hist'),h=st.history||[];q('i-hc').textContent=nf(h.length)+LB('টি',h.length===1?' entry':' entries');
+ if(!h.length){u.innerHTML='<li class="i-empty muted">'+LB('এখনো কোনো সেচ হয়নি। উপরের বাটনে ক্লিক করে শুরু করুন।','No irrigation yet. Tap the button above to start.')+'</li>';return}
+ u.innerHTML=h.map(r=>{const m=Math.floor(r.actual_s/60),s=r.actual_s%60,mo=(r.moisture_before!=null&&r.moisture_after!=null)?LB(` · আর্দ্রতা ${nf(r.moisture_before)}% → ${nf(r.moisture_after)}%`,` · moisture ${nf(r.moisture_before)}% → ${nf(r.moisture_after)}%`):'';
+  return`<li><div class="ic2">${r.source==='schedule'?'⏰':'👆'}</div><div><b>${r.source==='schedule'?LB('টাইমারে নিজে থেকে','By timer'):LB('হাতে চালু','By hand')} · ${LB(`${nf(m)} মিনিট ${nf(s)} সেকেন্ড`,`${nf(m)} min ${nf(s)} s`)}</b><span class="muted">${esc((REASON[r.stop_reason]||r.stop_reason)+mo)}</span></div><time>${esc(new Date(r.started_at).toLocaleTimeString(LANG==='en'?'en-US':'bn-BD',{hour:'2-digit',minute:'2-digit'}))}</time></li>`}).join('')}
+
+/* chart */
+function chart(){const c=q('i-ch'),se=S&&S.series||[];if(!c||c.offsetParent===null||!c.clientWidth)return;
+ const d=devicePixelRatio||1,w=c.clientWidth,h=c.clientHeight;c.width=w*d;c.height=h*d;const g=c.getContext('2d');g.setTransform(d,0,0,d,0,0);g.font='11px "JetBrains Mono",monospace';
+ if(se.length<2){g.fillStyle='#a9b8a6';g.textAlign='center';g.fillText(LB('ডেটা জমা হচ্ছে…','Collecting data…'),w/2,h/2);return}
+ const th=S.thresholds,t0=Date.parse(se[0].t),t1=Date.parse(se[se.length-1].t),sp=Math.max(t1-t0,30000),yM=Math.max(100,th.stop_at+10,Math.ceil((Math.max(...se.map(p=>p.v))+5)/10)*10),L=36,B=24,T=10;
+ const X=t=>L+(t-t0)/sp*(w-L-12),Y=v=>T+(h-T-B)*(1-v/yM);
+ g.strokeStyle='rgba(255,255,255,.08)';g.fillStyle='#a9b8a6';g.textAlign='right';for(let v=0;v<=yM;v+=25){g.beginPath();g.moveTo(L,Y(v));g.lineTo(w-12,Y(v));g.stroke();g.fillText(String(v),L-6,Y(v)+4)}
+ g.fillStyle='rgba(61,224,160,.16)';se.forEach((p,i)=>{if(p.pump&&i<se.length-1)g.fillRect(X(Date.parse(p.t)),T,X(Date.parse(se[i+1].t))-X(Date.parse(p.t))+1,h-T-B)});
+ const ln=(v,col,tx)=>{g.strokeStyle=col;g.setLineDash([5,5]);g.beginPath();g.moveTo(L,Y(v));g.lineTo(w-12,Y(v));g.stroke();g.setLineDash([]);g.fillStyle=col;g.textAlign='left';g.fillText(tx,L+4,Y(v)-4)};ln(th.irrigate_below,'#f0c46a',LB('সেচ','Irrigate'));ln(th.stop_at,'#3de0a0',LB('লক্ষ্য','Target'));
+ const path=()=>{g.beginPath();se.forEach((p,i)=>{const x=X(Date.parse(p.t)),y=Y(p.v);i?g.lineTo(x,y):g.moveTo(x,y)})};
+ const gr=g.createLinearGradient(0,T,0,h-B);gr.addColorStop(0,'rgba(163,242,10,.38)');gr.addColorStop(1,'rgba(61,224,160,0)');path();g.lineTo(X(t1),h-B);g.lineTo(X(t0),h-B);g.closePath();g.fillStyle=gr;g.fill();
+ path();g.strokeStyle='#a3f20a';g.lineWidth=2.6;g.lineJoin='round';g.stroke();const lp=se[se.length-1];g.fillStyle='rgba(163,242,10,.25)';g.beginPath();g.arc(X(t1),Y(lp.v),9,0,7);g.fill();g.fillStyle='#a3f20a';g.beginPath();g.arc(X(t1),Y(lp.v),4.5,0,7);g.fill();
+ g.fillStyle='#a9b8a6';g.textAlign='left';g.fillText(ago(Math.round((nowMs()-t0)/1000)),L,h-6);g.textAlign='right';g.fillText(LB('এখন','Now'),w-12,h-6)}
+addEventListener('resize',()=>chart());
+
+/* demo helpers */
+const sim=v=>act(async()=>{apply(await ipost(base()+'/sim',{moisture_pct:v}));say(LB('সিমুলেটেড আর্দ্রতা '+nf(v)+'% করা হয়েছে','Simulated moisture set to '+nf(v)+'%'))});
+q('i-dry').onclick=()=>sim(25);q('i-wet').onclick=()=>{if(S)sim(S.thresholds.stop_at+2)};
+if(curV==='irrigation')on();
+})();
+
+})();
+</script>
+
+<script>
+(()=>{
+ const $=id=>document.getElementById(id); if(!$('gtScenarioBadge')) return;
+ let mode='fresh';
+ const scenarios={
+  fresh:{moisture:42.6,note:'Illustrative reading only; not a live probe value.',badge:['FRESH · SIMULATED','good'],link:['SIMULATED','neutral','No device connection is verified by this scenario.'],fresh:['FRESH*','good','Example age: 8 seconds*'],quality:['PASS*','good','Illustrative checks only; backend must assess real data.'],twin:['PREVIEW ONLY','neutral','Demo selection does not update the actual crop twin.'],text:['Fresh simulated reading','good','Fresh, plausible readings may be candidates for the trust pipeline; backend validation is required.'],events:[['Sample received','Sequence 1042 · simulated','good'],['Illustrative quality check','No physical sensor connected','good'],['Twin preview','No real correction triggered','']] ,bars:[35,38,37,40,39,43,41,42.6]},
+  stale:{moisture:40,note:'Held last value · do not treat it as current.',badge:['STALE · SIMULATED','warn'],link:['NO RECENT DATA*','warn','No new packet in this simulated scenario.'],fresh:['STALE*','bad','Example age: 18 minutes*'],quality:['NOT RECHECKED','neutral','Freshness gate should block an update.'],twin:['HOLD UPDATE','warn','Keep the previous trusted state.'],text:['Stale reading held','warn','Show the last known value with its age; do not use it as a current twin correction.'],events:[['Freshness threshold exceeded','18 minutes since last packet · simulated','warn'],['Twin update withheld','Previous trusted state retained · simulated','bad']],bars:[39,40,39,41,40,40,40,40]},
+  suspect:{moisture:96,note:'Outlier example · not applied to the twin.',badge:['SUSPECT · SIMULATED','bad'],link:['SIMULATED PACKET','neutral','Packet receipt is illustrative only.'],fresh:['FRESH*','good','Example age: 4 seconds*'],quality:['FLAGGED*','bad','Illustrative out-of-range jump.'],twin:['HOLD UPDATE','warn','Do not correct the twin from a flagged sample.'],text:['Suspect reading quarantined','bad','Preserve the raw sample for review but withhold twin correction until quality and calibration checks pass.'],events:[['Packet received','Sequence 1043 · simulated · 4 seconds ago','good'],['Quality gate flagged outlier','Illustrative jump from prior sample','bad'],['Twin correction withheld','Review raw value and calibration','bad']],bars:[35,38,37,40,39,43,41,96]}
+ };
+ function eventHtml(e){return `<div class="gt-s-event ${e[2]}"><strong>${e[0]}</strong><p>${e[1]}</p></div>`}
+ function setMode(next){mode=next;document.querySelectorAll('[data-gt-mode]').forEach(b=>b.classList.toggle('active',b.dataset.gtMode===mode));const s=scenarios[mode];$('gtMoisture').innerHTML=`${s.moisture.toFixed(1)}<span>%</span>`;$('gtMoistureNote').textContent=s.note;$('gtScenarioBadge').className='gt-s-badge '+s.badge[1];$('gtScenarioBadge').textContent=s.badge[0];[['gtLinkStatus',s.link],['gtFreshStatus',s.fresh],['gtQualityStatus',s.quality],['gtTwinStatus',s.twin]].forEach(([id,v])=>{$(id).className='gt-s-badge '+v[1];$(id).textContent=v[0]});$('gtLinkDetail').textContent=s.link[2];$('gtFreshDetail').textContent=s.fresh[2];$('gtQualityDetail').textContent=s.quality[2];$('gtTwinDetail').textContent=s.twin[2];$('gtScenarioText').className='gt-s-event '+s.text[1];$('gtScenarioText').innerHTML=`<strong>${s.text[0]}</strong><p>${s.text[2]}</p>`;$('gtEvents').innerHTML=s.events.map(eventHtml).join('');$('gtBars').innerHTML=s.bars.map((v,i)=>`<div class="gt-s-bar" title="${v}%" style="height:${Math.max(8,Math.min(100,v))}%"></div>`).join('')}
+ document.querySelectorAll('[data-gt-mode]').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.gtMode)));setMode('fresh');
+ $('gtRefreshApi').addEventListener('click',async()=>{const b=$('gtApiStatus');b.className='gt-s-badge neutral';b.textContent='CHECKING';$('gtApiDetail').textContent='Requesting /health…';try{const r=await fetch('/health',{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const data=await r.json();b.className='gt-s-badge good';b.textContent='API REACHABLE';$('gtApiDetail').textContent='Server response: '+JSON.stringify(data)+'. This confirms reachability only.'}catch(e){b.className='gt-s-badge bad';b.textContent='UNAVAILABLE';$('gtApiDetail').textContent='Could not reach /health. Run GrowthTwin through its backend server. '+e.message}});
+ const checks=[...document.querySelectorAll('#gtChecklist input')];checks.forEach((c,i)=>{try{c.checked=localStorage.getItem('gt_sentinel_check_'+i)==='1'}catch(e){}c.addEventListener('change',()=>{try{localStorage.setItem('gt_sentinel_check_'+i,c.checked?'1':'0')}catch(e){}updateCount()})});function updateCount(){$('gtCheckCount').textContent=checks.filter(c=>c.checked).length+' / '+checks.length+' complete'}updateCount();
+ /* ---- Data source switch: simulation or real ESP32 readings, same cards ---- */
+ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const SRC_KEY='gt_sentinel_source',PLOT_KEY='gt_sentinel_plot',sec=document.getElementById('sentinel-monitor');
+ let source='sim';try{source=localStorage.getItem(SRC_KEY)==='real'?'real':'sim'}catch(e){}
+ function hdr(){const h={},token=localStorage.getItem('gt_token');if(token)h.Authorization='Bearer '+token;else{h['X-Dev-User']=localStorage.getItem('gt_dev_user')||'farmer1';h['X-Dev-Role']=localStorage.getItem('gt_dev_role')||'farmer'}return h}
+ async function getJ(path){const r=await fetch(path,{headers:hdr(),cache:'no-store'});const b=await r.json().catch(()=>({detail:r.statusText}));if(!r.ok)throw Error(typeof b.detail==='string'?b.detail:JSON.stringify(b.detail||b));return b}
+ const pct=v=>Number.isFinite(Number(v))?Number(v).toFixed(1)+'%':'—';
+ const ageText=s=>s<60?'just now':s<3600?Math.round(s/60)+' min ago':s<86400?Math.round(s/3600)+' h ago':Math.round(s/86400)+' d ago';
+ const setB=(id,text,cls)=>{$(id).className='gt-s-badge '+cls;$(id).textContent=text};
+ function paintEmpty(note,label){
+  $('gtMoisture').innerHTML='—<span>%</span>';$('gtMoistureNote').textContent=note;
+  setB('gtScenarioBadge',label,'neutral');setB('gtLinkStatus','NOT CONNECTED','neutral');setB('gtFreshStatus','NO DATA','neutral');setB('gtQualityStatus','NO DATA','neutral');setB('gtTwinStatus','NO DATA','neutral');
+  $('gtLinkDetail').textContent='No device has reported to this plot yet.';$('gtFreshDetail').textContent='There is no reading to measure the age of.';
+  $('gtQualityDetail').textContent='Nothing to check yet.';$('gtTwinDetail').textContent='The twin is not corrected without a reading.';
+  $('gtScenarioText').className='gt-s-event';$('gtScenarioText').innerHTML='<strong>No real reading yet</strong><p>'+esc(note)+'</p>';
+  $('gtEvents').innerHTML='';$('gtBars').innerHTML=''}
+ function paintReal(r,gap){
+  const L=r[0],g=L.reality_gap||gap.latest||{},age=Math.max(0,(Date.now()-new Date(L.timestamp).getTime())/1000);
+  const suspect=L.quality==='suspect',stale=age>900,when=ageText(age);
+  $('gtMoisture').innerHTML=`${Number(L.calibrated_moisture_pct).toFixed(1)}<span>%</span>`;
+  $('gtMoistureNote').textContent='Calibrated reading from '+L.device_id+' · sequence '+L.sequence;
+  const tone=suspect?'bad':stale?'warn':'good';
+  setB('gtScenarioBadge',suspect?'SUSPECT · REAL':stale?'STALE · REAL':'FRESH · REAL',tone);
+  setB('gtLinkStatus',stale?'NO RECENT DATA':'CONNECTED',stale?'warn':'good');$('gtLinkDetail').textContent=L.device_id+' reported '+when;
+  setB('gtFreshStatus',age<=900?'FRESH':age<=3600?'AGING':'STALE',age<=900?'good':age<=3600?'warn':'bad');$('gtFreshDetail').textContent='Reading age: '+when;
+  setB('gtQualityStatus',suspect?'FLAGGED':'PASS',suspect?'bad':'good');$('gtQualityDetail').textContent=suspect?'The latest reading was flagged by the quality check.':'The quality check passed for the latest reading.';
+  const used=g.measurement_used===true;
+  setB('gtTwinStatus',used?'APPLIED':'HELD',used?'good':'warn');$('gtTwinDetail').textContent=used?'The latest reading was used to correct the twin.':'The latest reading was not used to correct the twin.';
+  $('gtScenarioText').className='gt-s-event '+tone;
+  $('gtScenarioText').innerHTML='<strong>Latest real reading</strong><p>Measured moisture '+pct(L.calibrated_moisture_pct)+'; the model predicted '+pct(g.predicted_value)+'; corrected estimate '+pct(g.estimated_value)+'.</p>';
+  $('gtEvents').innerHTML=r.slice(0,4).map(x=>`<div class="gt-s-event ${x.quality==='suspect'?'bad':'good'}"><strong>Sequence ${esc(x.sequence)} · ${pct(x.calibrated_moisture_pct)}</strong><p>Quality: ${x.quality==='suspect'?'flagged':'passed'} · ${esc(new Date(x.timestamp).toLocaleString(GT.loc()))}</p></div>`).join('');
+  $('gtBars').innerHTML=r.slice(0,8).reverse().map(x=>{const v=Number(x.calibrated_moisture_pct)||0;return `<div class="gt-s-bar" title="${v.toFixed(1)}%" style="height:${Math.max(8,Math.min(100,v))}%"></div>`}).join('')}
+ let busy=false;
+ async function loadReal(){
+  if(busy)return;busy=true;
+  try{
+   const plots=await getJ('/twin/plots'),sel=$('gtPlot');let want=sel.value;try{want=want||localStorage.getItem(PLOT_KEY)||''}catch(e){}
+   if(!plots.length){sel.innerHTML='<option value="">No plots yet</option>';paintEmpty('No plots yet. Create a plot in the plot twin first, then return here.','NO PLOT');return}
+   sel.innerHTML=plots.map(p=>`<option value="${esc(p.id)}">${esc((p.name||'Plot')+' · '+String(p.id).slice(0,8))}</option>`).join('');
+   if(plots.some(p=>p.id===want))sel.value=want;try{localStorage.setItem(PLOT_KEY,sel.value)}catch(e){}
+   const pid=encodeURIComponent(sel.value);
+   const [hist,gap]=await Promise.all([getJ(`/twin/plots/${pid}/sensor-readings?limit=20`),getJ(`/twin/plots/${pid}/reality-gap`)]);
+   const r=hist.readings||[];
+   if(!r.length)paintEmpty(gap.sensor_configured?'Waiting for the first reading from the device.':'No sensor is registered for this plot yet. Register its calibration, then send readings from the ESP32.','NO DATA');else paintReal(r,gap);
+  }catch(e){paintEmpty('Could not load readings. '+e.message,'ERROR')}finally{busy=false}}
+ function setSource(s){
+  source=s;try{localStorage.setItem(SRC_KEY,s)}catch(e){}
+  const real=s==='real';document.querySelectorAll('[data-gt-source]').forEach(b=>b.classList.toggle('active',b.dataset.gtSource===s));
+  $('gtNotice').classList.toggle('hidden',real);$('gtNoticeReal').classList.toggle('hidden',!real);$('gtSimBar').classList.toggle('hidden',real);$('gtRealBar').classList.toggle('hidden',!real);
+  $('gtMoistureLabel').textContent=real?'SOIL MOISTURE · REAL SENSOR':'SOIL MOISTURE · DEMO';
+  $('gtBarsCaption').textContent=real?'Recent values come from the saved readings of this plot.':'Recent values are simulated, not from a connected probe.';
+  if(real)loadReal();else setMode(mode)}
+ document.querySelectorAll('[data-gt-source]').forEach(b=>b.addEventListener('click',()=>setSource(b.dataset.gtSource)));
+ $('gtReload').addEventListener('click',loadReal);$('gtPlot').addEventListener('change',()=>{try{localStorage.setItem(PLOT_KEY,$('gtPlot').value)}catch(e){}loadReal()});
+ setInterval(()=>{if(source==='real'&&sec&&sec.classList.contains('active'))loadReal()},15000);
+ document.addEventListener('gt-view',e=>{if(source==='real'&&e.detail==='sentinel-monitor')loadReal()});
+ setSource(source);
+})();
+</script>
+
+</body>
+</html>

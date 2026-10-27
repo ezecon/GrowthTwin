@@ -1,0 +1,11 @@
+id,name_bn,name_en,family,seasons,ph_min,ph_max,duration_days,soils,water_need
+boro,বোরো ধান,Boro rice,cereal,rabi,5.5,7.5,140,doash|entel,high
+aman,আমন ধান,Aman rice,cereal,kharif2,5.5,7.0,125,doash|entel,high
+aus,আউশ ধান,Aus rice,cereal,kharif1,5.5,7.0,100,doash|entel|beley,medium
+wheat,গম,Wheat,cereal,rabi,6.0,7.5,110,doash,medium
+maize,ভুট্টা,Maize,cereal,rabi|kharif1,5.8,7.0,130,doash|beley,medium
+potato,আলু,Potato,solanaceae,rabi,5.0,6.5,90,doash|beley,medium
+tomato,টমেটো,Tomato,solanaceae,rabi,6.0,7.0,110,doash,medium
+mustard,সরিষা,Mustard,brassica,rabi,6.0,7.5,90,doash|beley|entel,low
+lentil,মসুর ডাল,Lentil,legume,rabi,6.0,7.5,100,doash|beley,low
+jute,পাট,Jute,fiber,kharif1,6.0,7.5,120,doash|entel,medium
